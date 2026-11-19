@@ -1,0 +1,2711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#e9e0cd">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23e9e0cd'/%3E%3Crect x='10' y='10' width='44' height='44' fill='none' stroke='%239e2b25' stroke-width='2'/%3E%3Ctext x='32' y='43' font-size='28' text-anchor='middle' fill='%239e2b25' font-family='serif'%3E%E9%9D%92%3C/text%3E%3C/svg%3E">
+<title>青简 · 刷题</title>
+<style>
+:root{
+  --paper:#e9e0cd;
+  --paper-2:#efe7d7;
+  --ink:#1a1a1a;
+  --ink-2:#3a3a3a;
+  --ink-3:#57534b;
+  --ink-4:#8b857a;
+  --faint:rgba(26,26,26,.12);
+  --faint-2:rgba(26,26,26,.07);
+  --cinnabar:#9e2b25;
+  --jade:#2a5c82;
+  --serif:"Noto Serif SC","Source Han Serif SC","霞鹜文楷","LXGW WenKai","STSong","Songti SC","SimSun",serif;
+  --sans:"Noto Sans SC","Source Han Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--paper)}
+body{
+  margin:0;min-height:100vh;color:var(--ink);
+  font-family:var(--serif);font-size:16px;line-height:1.75;
+  background:
+    radial-gradient(1100px 760px at 12% -8%, #f6efdf 0%, rgba(246,239,223,0) 62%),
+    radial-gradient(920px 700px at 108% 10%, #f0e7d4 0%, rgba(240,231,212,0) 58%),
+    radial-gradient(1200px 900px at 50% 118%, #e2d8c2 0%, rgba(226,216,194,0) 62%),
+    var(--paper);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+button{font-family:inherit}
+.hidden{display:none !important}
+#ink{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.veil{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(120% 92% at 50% 40%, rgba(233,224,205,0) 56%, rgba(233,224,205,.58) 100%)}
+
+/* ---------- 版式 ---------- */
+.layout{
+  position:relative;z-index:1;max-width:1160px;margin:0 auto;
+  padding:clamp(26px,5vh,60px) clamp(20px,4vw,56px) 80px;
+  display:grid;grid-template-columns:168px minmax(0,1fr);
+  gap:clamp(32px,7vw,104px);align-items:start;min-height:100vh;
+}
+.main{max-width:44em;min-width:0}
+.side{position:sticky;top:clamp(26px,6vh,60px);display:flex;flex-direction:column;gap:38px;min-height:56vh;
+  animation:rise .9s ease-out both}
+.brand{display:flex;align-items:center;gap:12px}
+.seal{
+  flex:none;width:38px;height:38px;border:1.4px solid var(--cinnabar);color:var(--cinnabar);
+  display:grid;place-items:center;font-size:11px;line-height:1.05;letter-spacing:3px;
+  writing-mode:vertical-rl;text-orientation:upright;padding:3px;transform:rotate(-2deg);
+}
+.brand-text{font-size:15px;letter-spacing:.3em;color:var(--ink)}
+.brand-text small{display:block;font-size:9.5px;letter-spacing:.18em;color:var(--ink-4);margin-top:2px}
+.nav{display:flex;flex-direction:column}
+.nav button{
+  position:relative;display:flex;align-items:baseline;gap:10px;background:none;border:0;
+  padding:9px 0 10px;text-align:left;cursor:pointer;color:var(--ink-4);
+  font-family:var(--serif);font-size:15px;letter-spacing:.2em;line-height:1.2;
+  transition:color .55s ease-out;
+}
+.nav button .no{font-family:var(--sans);font-size:9px;letter-spacing:.08em;color:rgba(26,26,26,.26);transition:color .55s ease-out}
+.nav button::after{
+  content:"";position:absolute;left:0;right:0;bottom:4px;height:1px;background:var(--ink);
+  opacity:.5;transform:scaleX(0);transform-origin:left;
+  transition:transform .8s cubic-bezier(.19,1,.22,1);
+}
+.nav button:hover{color:var(--ink-2)}
+.nav button:hover::after{transform:scaleX(.55)}
+.nav button.on{color:var(--ink)}
+.nav button.on::after{transform:scaleX(1)}
+.nav button.on .no{color:var(--cinnabar)}
+.nav button.on::before{content:"";position:absolute;left:-13px;top:50%;width:4px;height:4px;margin-top:-2px;background:var(--cinnabar)}
+.side-foot{margin-top:auto;padding-top:22px;border-top:1px solid var(--faint-2)}
+.side-foot p{margin:0;font-size:10.5px;letter-spacing:.16em;color:var(--ink-4);line-height:2}
+
+/* ---------- 页头 ---------- */
+.head{margin-bottom:clamp(18px,3.6vh,36px);animation:rise .9s .08s ease-out both}
+.head h1{margin:0 0 7px;font-size:clamp(29px,3.3vw,40px);font-weight:500;letter-spacing:.2em;line-height:1.3;color:var(--ink)}
+.head p{margin:0;font-size:12px;letter-spacing:.16em;color:var(--ink-4)}
+.brush-hr{display:block;width:min(100%,26em);height:11px;margin:16px 0 0;color:rgba(26,26,26,.24)}
+.head .brush-hr{margin-top:18px}
+
+/* ---------- 视图 ---------- */
+.view{display:none}
+.view.on{display:block;animation:viewIn .85s ease-out both}
+@keyframes viewIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+/* ---------- 统计行 ---------- */
+.statline{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 30px;margin:0 0 26px;
+  font-size:11.5px;letter-spacing:.14em;color:var(--ink-4);
+  animation:rise .9s .16s ease-out both;
+}
+.statline b{
+  margin-left:7px;font-family:var(--serif);font-size:15.5px;font-weight:500;color:var(--ink);
+  letter-spacing:.02em;font-variant-numeric:tabular-nums;
+}
+
+/* ---------- 筛选 ---------- */
+.filters{
+  padding:8px 0 10px;border-top:1px solid var(--faint-2);border-bottom:1px solid var(--faint-2);
+  margin-bottom:clamp(20px,4vh,34px);animation:rise .9s .24s ease-out both;
+}
+.frow{display:flex;align-items:baseline;gap:16px;padding:6px 0}
+.flabel{flex:none;width:38px;font-size:10.5px;letter-spacing:.24em;color:var(--ink-4);white-space:nowrap}
+.bankgroups{display:flex;flex-wrap:wrap;gap:4px 22px;flex:1;min-width:0}
+.bgroup{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px}
+.glabel{
+  background:none;border:0;border-bottom:1px solid var(--faint);padding:0 0 1px;cursor:pointer;
+  font-family:var(--serif);font-size:11px;letter-spacing:.14em;color:var(--ink-3);line-height:1.7;
+  transition:color .5s ease-out,border-color .5s ease-out;
+}
+.glabel:hover{color:var(--ink);border-color:rgba(26,26,26,.35)}
+.glabel i{font-style:normal;font-size:9.5px;color:var(--ink-4);margin-left:3px}
+.chips{display:flex;flex-wrap:wrap;gap:3px 17px;flex:1;min-width:0}
+.chip{
+  position:relative;background:none;border:0;padding:2px 0 3px;cursor:pointer;
+  font-family:var(--serif);font-size:13px;letter-spacing:.07em;line-height:1.6;color:var(--ink-4);
+  transition:color .5s ease-out;
+}
+.chip::after{
+  content:"";position:absolute;left:0;right:0;bottom:1px;height:1px;background:currentColor;
+  opacity:0;transform:scaleX(.4);transform-origin:left;
+  transition:opacity .6s ease-out,transform .6s ease-out;
+}
+.chip:hover{color:var(--ink-2)}
+.chip:hover::after{opacity:.28;transform:scaleX(.7)}
+.chip.on{color:var(--ink)}
+.chip.on::after{opacity:.8;transform:scaleX(1)}
+.chip em{font-style:normal;font-size:9.5px;color:var(--ink-4);margin-left:4px}
+.chip.on em{color:var(--cinnabar)}
+.chip.bank span{max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:bottom}
+.chip.bank.on span{max-width:230px}
+
+/* ---------- 题卡 ---------- */
+.qcard{max-width:44em;animation:rise .9s .32s ease-out both}
+.qhead{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding-bottom:12px;border-bottom:1px solid var(--faint-2)}
+.qmeta{display:flex;align-items:baseline;flex-wrap:wrap;gap:5px 0;min-width:0}
+.prog{font-size:12.5px;letter-spacing:.12em;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.tag{margin-left:14px;font-size:10.5px;letter-spacing:.1em;color:var(--ink-4);white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis}
+.tag.bank{color:var(--jade)}
+.tag.part{color:var(--ink-4)}
+.star{
+  background:none;border:0;padding:0 2px;cursor:pointer;flex:none;line-height:1;
+  font-size:19px;color:rgba(26,26,26,.22);transition:color .5s ease-out,transform .6s ease-out;
+}
+.star:hover{color:rgba(26,26,26,.5)}
+.star.on{color:var(--cinnabar)}
+.star.pop{animation:starPop .7s ease-out}
+@keyframes starPop{0%{transform:scale(.82)}45%{transform:scale(1.18)}100%{transform:scale(1)}}
+.clock{font-size:12px;letter-spacing:.12em;color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.clock.urgent{color:var(--cinnabar)}
+.stem{
+  margin:22px 0 18px;font-size:clamp(17px,1.55vw,18.5px);font-weight:500;line-height:1.9;
+  color:var(--ink);white-space:pre-wrap;word-break:break-word;letter-spacing:.01em;
+}
+.opts{display:flex;flex-direction:column}
+.opt{
+  display:flex;align-items:flex-start;gap:14px;width:100%;text-align:left;
+  background:none;border:0;border-bottom:1px solid var(--faint-2);
+  padding:11px 8px 11px 4px;cursor:pointer;position:relative;
+  font-family:var(--serif);font-size:15px;line-height:1.75;color:var(--ink-2);
+  transition:background .7s ease-out,color .5s ease-out;
+}
+.opt:hover{background:radial-gradient(240px 64px at 16% 50%,rgba(26,26,26,.045),rgba(26,26,26,0) 72%);color:var(--ink)}
+.opt .k{
+  flex:none;width:22px;height:22px;margin-top:3px;display:grid;place-items:center;
+  border:1px solid var(--faint);font-family:var(--sans);font-size:11px;color:var(--ink-3);
+  transition:background .55s ease-out,color .55s ease-out,border-color .55s ease-out;
+}
+.opt .t{white-space:pre-wrap;word-break:break-word}
+.opt.sel{color:var(--ink);background:rgba(26,26,26,.035)}
+.opt.sel .k{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.opt.ok{color:var(--jade)}
+.opt.ok .k{border-color:rgba(42,92,130,.55);color:var(--jade);background:none}
+.opt.ok::after{content:"✓";position:absolute;right:8px;top:12px;font-family:var(--sans);font-size:12px;color:var(--jade)}
+.opt.bad{color:var(--cinnabar)}
+.opt.bad .k{border-color:rgba(158,43,37,.5);color:var(--cinnabar);background:none}
+.opt.bad::after{content:"✕";position:absolute;right:8px;top:12px;font-family:var(--sans);font-size:11px;color:var(--cinnabar)}
+.feedback{display:none;margin-top:16px;padding:2px 0 2px 12px;border-left:1px solid var(--faint);
+  font-size:13.5px;line-height:1.85;color:var(--ink-2)}
+.feedback.show{display:block;animation:viewIn .65s ease-out both}
+.feedback.ok{border-left-color:rgba(42,92,130,.45);color:var(--jade)}
+.feedback.bad{border-left-color:rgba(158,43,37,.42);color:#7d2a26}
+.feedback.examhint{border-left-color:var(--faint);color:var(--ink-4)}
+.feedback b{font-weight:500;color:var(--ink)}
+.exp{margin-top:28px;padding-top:18px;border-top:1px solid var(--faint-2)}
+.exp-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin-bottom:10px}
+.exp-head > span{font-size:10.5px;letter-spacing:.34em;color:var(--ink-4)}
+.exp-body{
+  font-size:13.8px;line-height:1.9;color:var(--ink-2);white-space:pre-wrap;word-break:break-word;
+  padding-left:13px;border-left:1px solid var(--faint);
+}
+.exp-body.placeholder{color:var(--ink-4)}
+.qfoot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:30px}
+.qfoot .spacer{flex:1}
+.kbd{margin:20px 0 0;text-align:center;font-size:10.5px;letter-spacing:.1em;color:rgba(26,26,26,.3)}
+.empty{text-align:center;padding:44px 10px 30px}
+.empty-seal{
+  display:inline-grid;place-items:center;width:44px;height:44px;border:1px solid var(--faint);
+  font-size:17px;color:var(--ink-4);margin-bottom:16px;transform:rotate(-2deg);
+}
+.empty p{margin:0;color:var(--ink-4);font-size:13.5px;line-height:1.9}
+
+/* ---------- 按钮 ---------- */
+.btn{
+  position:relative;isolation:isolate;overflow:hidden;
+  background:none;border:1px solid rgba(26,26,26,.22);padding:8px 19px;cursor:pointer;
+  font-family:var(--serif);font-size:13px;letter-spacing:.14em;color:var(--ink-2);
+  transition:color .5s ease-out,border-color .5s ease-out;
+}
+.btn::before{
+  content:"";position:absolute;inset:-30%;z-index:-1;opacity:0;transform:scale(.55);
+  background:radial-gradient(closest-side,rgba(26,26,26,.13),rgba(26,26,26,0) 70%);
+  transition:opacity .75s ease-out,transform .75s ease-out;
+}
+.btn:hover{color:var(--ink);border-color:rgba(26,26,26,.45)}
+.btn:hover::before{opacity:1;transform:scale(1.15)}
+.btn:active{color:#000}
+.btn:disabled{opacity:.34;cursor:not-allowed}
+.btn:disabled::before{display:none}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.btn.primary:hover{background:#000;color:var(--paper)}
+.btn.cinnabar{background:var(--cinnabar);border-color:var(--cinnabar);color:#f6efdf}
+.btn.cinnabar:hover{background:#8a241f;border-color:#8a241f;color:#f6efdf}
+.btn.cinnabar:disabled{background:rgba(158,43,37,.35);border-color:transparent;color:rgba(246,239,223,.7)}
+.btn.tiny{padding:4px 11px;font-size:11.5px;letter-spacing:.1em}
+.btn.ghost{border-color:transparent;color:var(--ink-4);padding-left:4px;padding-right:4px}
+.btn.ghost:hover{color:var(--ink)}
+.link{
+  background:none;border:0;border-bottom:1px solid var(--faint);padding:0 0 1px;cursor:pointer;
+  font-family:var(--serif);font-size:12px;letter-spacing:.1em;color:var(--jade);
+  transition:color .5s ease-out,border-color .5s ease-out;
+}
+.link:hover{color:#1f4765;border-color:rgba(42,92,130,.4)}
+.link.danger{color:var(--ink-2);border-color:var(--faint)}
+.link.danger:hover{color:var(--cinnabar);border-color:rgba(158,43,37,.4)}
+
+/* ---------- 考试条 ---------- */
+.exam-strip{
+  position:sticky;top:0;z-index:6;display:flex;align-items:center;flex-wrap:wrap;gap:10px 18px;
+  margin:-6px 0 18px;padding:10px 0;border-bottom:1px solid var(--faint);
+  background:linear-gradient(180deg,rgba(233,224,205,.97),rgba(233,224,205,.82));
+  font-size:12px;letter-spacing:.08em;color:var(--ink-3);
+}
+.exam-strip .dot{width:5px;height:5px;background:var(--cinnabar);display:inline-block}
+.exam-strip .strip-grow{flex:1}
+
+/* ---------- 内容块 ---------- */
+.block{padding:6px 0 26px;border-bottom:1px solid var(--faint-2);margin-bottom:26px}
+.block:last-child{border-bottom:0}
+.block h2{margin:0 0 16px;font-size:14px;font-weight:500;letter-spacing:.24em;color:var(--ink)}
+.block .intro{margin:-8px 0 16px;font-size:12.5px;line-height:1.85;color:var(--ink-4)}
+.field{display:flex;flex-direction:column;gap:6px;font-size:10.5px;letter-spacing:.16em;color:var(--ink-4)}
+.field input,.field select,.field textarea{
+  width:100%;background:rgba(255,255,255,.16);border:1px solid var(--faint);padding:8px 10px;
+  font-family:var(--serif);font-size:13.5px;letter-spacing:0;line-height:1.6;color:var(--ink);
+  outline:none;transition:border-color .55s ease-out,background .55s ease-out;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(26,26,26,.38);background:rgba(255,255,255,.28)}
+.field textarea{min-height:118px;resize:vertical}
+input[type=file]{padding:7px 8px;font-size:12px;color:var(--ink-4)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;margin-bottom:14px}
+.row-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:14px}
+.status{font-size:11.5px;line-height:1.8;color:var(--ink-4);letter-spacing:.03em;word-break:break-word}
+.tip{margin:10px 0 0;font-size:11.5px;line-height:1.85;color:var(--ink-4)}
+.ml{margin-left:auto}
+.hint{margin-top:16px;border-top:1px solid var(--faint-2);padding-top:12px}
+.hint summary{cursor:pointer;font-size:11.5px;letter-spacing:.1em;color:var(--ink-3);list-style:none}
+.hint summary::-webkit-details-marker{display:none}
+.hint summary::before{content:"▸ ";display:inline-block;transition:transform .5s ease-out}
+.hint[open] summary::before{transform:rotate(90deg)}
+.hint h4{margin:14px 0 4px;font-size:11px;font-weight:500;letter-spacing:.12em;color:var(--ink-3)}
+.hint pre{
+  margin:6px 0 0;padding:10px 12px;border-left:1px solid var(--faint);background:rgba(255,255,255,.14);
+  font-family:Consolas,"Courier New",monospace;font-size:11.5px;line-height:1.8;
+  color:var(--ink-2);white-space:pre-wrap;word-break:break-word;max-height:260px;overflow:auto;
+}
+.progress{height:1px;background:var(--faint-2);overflow:hidden;margin:16px 0 12px}
+.progress i{display:block;height:100%;width:0;background:rgba(26,26,26,.55);transition:width .4s ease-out}
+.exinfo p{margin:0 0 3px;font-size:12px;line-height:1.9;color:var(--ink-4);letter-spacing:.04em}
+.exinfo b{font-family:var(--serif);font-size:17px;font-weight:500;color:var(--ink);padding:0 2px}
+
+/* 题库列表 */
+.banklist{margin-top:2px}
+.mg-group{margin:18px 0 2px;font-size:10.5px;letter-spacing:.2em;color:var(--ink-4)}
+.mg-group:first-child{margin-top:0}
+.mrow{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--faint-2)}
+.mname{flex:1;min-width:0}
+.mname b{display:block;font-size:13.5px;font-weight:500;color:var(--ink);word-break:break-all}
+.mname span{display:block;margin-top:2px;font-size:10.5px;letter-spacing:.04em;color:var(--ink-4)}
+.mact{display:flex;align-items:baseline;gap:14px;flex:none}
+.mact select{
+  width:auto;min-width:104px;background:rgba(255,255,255,.14);border:1px solid var(--faint);
+  padding:4px 7px;font-family:var(--serif);font-size:11.5px;color:var(--ink-2);outline:none;
+}
+
+/* 结果 */
+.scorewrap{text-align:center;padding:4px 0 6px}
+.score{display:inline-flex;align-items:baseline;gap:8px;color:var(--ink)}
+.score span{font-family:var(--serif);font-size:66px;font-weight:400;line-height:1;letter-spacing:.02em}
+.score small{font-size:12px;letter-spacing:.24em;color:var(--ink-4)}
+.rsline{margin:8px 0 20px;text-align:center;font-size:11.5px;letter-spacing:.08em;line-height:1.9;color:var(--ink-4)}
+.rsline b{font-family:var(--serif);font-size:15px;font-weight:500;color:var(--ink);padding:0 2px}
+.wronglist{max-height:320px;overflow:auto}
+.witem{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--faint-2);font-size:12.5px;line-height:1.75}
+.witem:last-child{border-bottom:0}
+.wstem{flex:1;min-width:0;color:var(--ink-2)}
+.wans{flex:none;color:var(--ink-4);font-size:11px;white-space:nowrap}
+.wronglist .more{padding:8px 0;text-align:center;font-size:11px;color:var(--ink-4)}
+.allright{padding:18px 0;text-align:center;font-size:13px;letter-spacing:.1em;color:var(--jade)}
+
+/* 分题库统计 */
+.statlist{display:flex;flex-direction:column}
+.statrow{display:grid;grid-template-columns:1.55fr .62fr .72fr .48fr;gap:8px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--faint-2);font-size:11.5px;color:var(--ink-4);letter-spacing:.03em}
+.statrow .sname{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);font-size:12.5px}
+.statrow .sname em{font-style:normal;margin-left:7px;font-size:10px;color:var(--ink-4)}
+.statrow .snum{text-align:right;white-space:nowrap}
+.statrow .sacc{text-align:right;font-family:var(--serif);font-size:13.5px;color:var(--jade)}
+.sbar{grid-column:1 / -1;height:1px;background:var(--faint-2);margin:-1px 0 6px}
+.sbar i{display:block;height:1px;background:rgba(26,26,26,.42)}
+
+/* ---------- 提示 / 启动 ---------- */
+.toast{
+  position:fixed;left:50%;bottom:32px;z-index:70;transform:translate(-50%,12px);
+  max-width:86vw;padding:9px 20px;border:1px solid rgba(26,26,26,.18);
+  background:rgba(239,231,215,.97);color:var(--ink-2);font-size:12.5px;letter-spacing:.04em;
+  text-align:center;opacity:0;pointer-events:none;transition:opacity .45s ease-out,transform .45s ease-out;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.boot{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:var(--paper);text-align:center;transition:opacity .7s ease-out}
+.boot.gone{opacity:0;pointer-events:none}
+.boot-seal{width:44px;height:44px;margin:0 auto 18px;border:1.4px solid var(--cinnabar);color:var(--cinnabar);
+  display:grid;place-items:center;font-size:13px;letter-spacing:3px;writing-mode:vertical-rl;
+  transform:rotate(-2deg);padding:3px}
+.boot p{margin:0;font-size:11px;letter-spacing:.32em;color:var(--ink-4)}
+footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--faint-2);font-size:10.5px;letter-spacing:.14em;color:rgba(26,26,26,.32);text-align:center}
+
+/* ---------- 账号 ---------- */
+.side-user{margin-top:auto;padding-top:20px;border-top:1px solid var(--faint-2)}
+.side-user .who{font-size:10.5px;letter-spacing:.14em;line-height:1.9;color:var(--ink-4);word-break:break-all}
+.side-user .who b{display:block;font-weight:400;font-size:12px;letter-spacing:.04em;color:var(--ink);word-break:break-all}
+.side-user .row{display:flex;align-items:baseline;gap:14px;margin-top:3px}
+.auth-veil{
+  position:fixed;inset:0;z-index:80;display:flex;align-items:flex-start;justify-content:center;
+  padding:24px;overflow-y:auto;
+  background:rgba(233,224,205,.74);backdrop-filter:blur(3px);
+}
+.auth-veil[hidden]{display:none}
+.auth-box{
+  position:relative;width:min(392px,100%);padding:36px 30px 26px;margin:auto 0;
+  background:var(--paper-2);border:1px solid var(--faint);
+  box-shadow:0 26px 70px -34px rgba(26,26,26,.6);
+  animation:rise .6s ease-out both;
+}
+.auth-box .seal{position:absolute;top:18px;right:18px}
+.auth-box h2{margin:0 0 5px;font-size:19px;font-weight:500;letter-spacing:.22em;color:var(--ink)}
+.auth-sub{margin:0 0 20px;font-size:11.5px;line-height:1.85;letter-spacing:.04em;color:var(--ink-4)}
+.auth-box .field{margin-bottom:13px}
+.auth-box .field[hidden]{display:none}
+.auth-msg{min-height:17px;margin:0 0 10px;font-size:11.5px;line-height:1.7;color:var(--cinnabar)}
+.auth-actions{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.auth-close{
+  position:absolute;top:10px;left:12px;padding:4px 6px;border:0;background:none;cursor:pointer;
+  font-size:19px;line-height:1;color:var(--ink-4);transition:color .35s ease-out;
+}
+.auth-close:hover{color:var(--ink)}
+.auth-box .tip{margin-top:16px;padding-top:12px;border-top:1px solid var(--faint-2)}
+.auth-code{display:flex;align-items:center;gap:10px}
+.auth-code input{flex:1;min-width:0}
+.auth-code .link{flex:none;font-size:11px;white-space:nowrap;padding:2px 0}
+.auth-alt{margin:10px 0 0;text-align:right}
+.auth-alt[hidden]{display:none}
+
+/* ---------- 个人主页 ---------- */
+.profile-head{display:flex;align-items:center;gap:20px;margin-bottom:22px}
+.profile-avatar{width:64px;height:64px;flex:none;display:grid;place-items:center;
+  border:1.4px solid var(--cinnabar);color:var(--cinnabar);font-size:24px;letter-spacing:2px;
+  transform:rotate(-2deg);padding:2px}
+.profile-id h2{margin:0 0 4px;font-size:19px;font-weight:500;letter-spacing:.18em;color:var(--ink)}
+.profile-id p{margin:0;font-size:11.5px;line-height:1.9;color:var(--ink-4);word-break:break-all}
+.pf-cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--faint-2);border:1px solid var(--faint-2)}
+.pf-card{padding:14px 12px 12px;display:flex;flex-direction:column;gap:5px}
+.pf-card em{font-style:normal;font-size:10px;letter-spacing:.16em;color:var(--ink-4)}
+.pf-card b{font-weight:400;font-size:20px;letter-spacing:.02em;color:var(--ink);white-space:nowrap}
+.pf-card b small{font-size:11px;color:var(--ink-4);margin-left:1px}
+@media (max-width:760px){
+  .pf-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .profile-avatar{width:52px;height:52px;font-size:20px}
+}
+
+@media (max-width:760px){
+  body{font-size:15px}
+  .layout{display:block;padding:22px 18px 60px}
+  .side{position:static;display:block;min-height:0;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--faint-2)}
+  .brand{margin-bottom:12px}
+  .nav{flex-direction:row;flex-wrap:wrap;gap:2px 18px}
+  .nav button{padding:5px 0 7px;font-size:14px}
+  .nav button.on::before{display:none}
+  .nav button::after{bottom:2px}
+  .side-foot{display:none}
+  .side-user{margin-top:12px;padding-top:10px;display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .side-user .who b{display:inline;margin-left:6px}
+  .head h1{font-size:27px;letter-spacing:.16em}
+  .frow{display:block;padding:7px 0}
+  .flabel{display:block;width:auto;margin-bottom:3px}
+  .bankgroups{gap:4px 16px}
+  .grid2{grid-template-columns:1fr}
+  .stem{font-size:16.5px}
+  .opt{font-size:14.5px;padding:10px 6px 10px 2px}
+  .qfoot .btn{flex:1;text-align:center}
+  .qfoot .spacer{display:none}
+  .score span{font-size:54px}
+  .statrow{grid-template-columns:1.4fr .7fr .8fr .6fr}
+  .exam-strip{gap:8px 12px}
+}
+@media (max-height:900px) and (min-width:761px){
+  .layout{padding-top:24px;padding-bottom:60px}
+  .side{gap:24px}
+  .head{margin-bottom:14px}
+  .head h1{font-size:31px}
+  .head .brush-hr{margin-top:10px}
+  .statline{margin-bottom:14px}
+  .filters{padding:4px 0 6px;margin-bottom:18px}
+  .frow{padding:4px 0}
+  .qhead{padding-bottom:9px}
+  .stem{margin:15px 0 12px}
+  .opt{padding:9px 8px 9px 4px}
+  .exp{margin-top:18px;padding-top:12px}
+  .qfoot{margin-top:18px}
+  .kbd{margin-top:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+<canvas id="ink" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
+
+<div class="layout">
+  <aside class="side">
+    <div class="brand">
+      <div class="seal" aria-hidden="true">青简</div>
+      <div class="brand-text">青简<small>本地题库</small></div>
+    </div>
+    <nav class="nav" aria-label="功能区">
+      <button type="button" data-view="quiz" class="on"><span class="no">01</span><span>刷题</span></button>
+      <button type="button" data-view="banks"><span class="no">02</span><span>题库</span></button>
+      <button type="button" data-view="ai"><span class="no">03</span><span>解析</span></button>
+      <button type="button" data-view="exam"><span class="no">04</span><span>考试</span></button>
+      <button type="button" data-view="stats"><span class="no">05</span><span>统计</span></button>
+      <button type="button" data-view="profile"><span class="no">06</span><span>我的</span></button>
+    </nav>
+    <div class="side-user" id="sideUser"></div>
+    <div class="side-foot">
+      <p>本地存储 · 离线可用<br>题库落在本机磁盘</p>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="exam-strip hidden" id="examStrip">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="clock" id="examClock"></span>
+      <span class="status" id="stripAnswered"></span>
+      <span class="strip-grow"></span>
+      <button type="button" class="link danger" id="btnExamSubmit">交卷</button>
+      <button type="button" class="link" data-view="quiz">返回题目</button>
+    </div>
+
+    <header class="head">
+      <h1 id="headTitle">刷题</h1>
+      <p id="headSub">静心读题，逐题作答</p>
+      <svg class="brush-hr" viewBox="0 0 420 12" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M2 7 C 62 4.4, 122 9, 192 6.2 S 318 8.8, 418 5" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+        <path d="M34 8.8 C 98 7, 152 10.1, 232 8.2 S 348 9.8, 398 7.4" fill="none" stroke="currentColor" stroke-width=".55" opacity=".55" stroke-linecap="round"/>
+      </svg>
+    </header>
+
+    <!-- 刷题 -->
+    <section class="view on" id="viewQuiz" aria-label="刷题">
+      <div class="statline" aria-label="学习统计">
+        <span>总题量<b id="stTotal">0</b></span>
+        <span>已作答<b id="stDone">0</b></span>
+        <span>正确率<b id="stAcc">0%</b></span>
+        <span>收藏<b id="stFav">0</b></span>
+      </div>
+
+      <div class="filters" aria-label="筛选">
+        <div class="frow">
+          <span class="flabel">题库</span>
+          <div class="bankgroups" id="bankChips"></div>
+        </div>
+        <div class="frow">
+          <span class="flabel">题型</span>
+          <div class="chips" id="typeChips"></div>
+        </div>
+        <div class="frow">
+          <span class="flabel">进度</span>
+          <div class="chips" id="partChips"></div>
+        </div>
+        <div class="frow">
+          <span class="flabel">模式</span>
+          <div class="chips" id="modeChips"></div>
+        </div>
+      </div>
+
+      <article class="qcard" id="qcard" aria-live="polite">
+        <div class="qhead">
+          <div class="qmeta">
+            <span class="prog" id="qProgress">0 / 0</span>
+            <span class="tag bank" id="qBank"></span>
+            <span class="tag" id="qType"></span>
+            <span class="tag part" id="qPart"></span>
+          </div>
+          <button id="btnFav" class="star" title="收藏本题" aria-label="收藏本题">☆</button>
+        </div>
+        <div id="emptyState" class="empty" hidden>
+          <div class="empty-seal">卷</div>
+          <p id="emptyText">正在展开题卷…</p>
+        </div>
+        <h2 class="stem" id="stem"></h2>
+        <div class="opts" id="opts"></div>
+        <div class="feedback" id="feedback"></div>
+        <div class="exp" id="expBox">
+          <div class="exp-head">
+            <span>解析</span>
+            <button id="btnAiGen" type="button" class="link">AI 生成解析</button>
+          </div>
+          <div class="exp-body" id="expBody"></div>
+        </div>
+        <div class="qfoot" id="qfoot">
+          <button id="btnPrev" type="button" class="btn">上一题</button>
+          <span class="spacer"></span>
+          <button id="btnSubmit" type="button" class="btn primary" hidden>提交多选</button>
+          <button id="btnNext" type="button" class="btn primary">下一题</button>
+        </div>
+        <p class="kbd">键盘 A–H / 1–8 选择　Enter 下一题　← → 切换</p>
+      </article>
+    </section>
+
+    <!-- 题库 -->
+    <section class="view" id="viewBanks" aria-label="题库">
+      <div class="block">
+        <h2>导入题库</h2>
+        <p class="intro">支持纯文本、JSON、CSV 与 Word（.docx），可粘贴也可选文件。导入后按分组存放于本机题库目录。</p>
+        <div class="grid2">
+          <label class="field">题库名称
+            <input id="imName" placeholder="留空则用文件名">
+          </label>
+          <label class="field">分组（可空）
+            <input id="imGroup" list="groupList" placeholder="如：国网备考">
+            <datalist id="groupList"></datalist>
+          </label>
+        </div>
+        <div class="grid2">
+          <label class="field">格式
+            <select id="imFormat">
+              <option value="text">纯文本</option>
+              <option value="json">JSON</option>
+              <option value="csv">CSV</option>
+              <option value="docx">Word (.docx)</option>
+            </select>
+          </label>
+          <label class="field">文件（Word 必选）
+            <input id="imFile" type="file" accept=".json,.txt,.csv,.docx">
+          </label>
+        </div>
+        <label class="field">粘贴内容（JSON / TXT / CSV）
+          <textarea id="imText" rows="6" placeholder="把题目文本粘贴到这里；Word 请直接选文件。"></textarea>
+        </label>
+        <div class="row-actions">
+          <button id="btnImport" type="button" class="btn primary">导入</button>
+          <span id="imStatus" class="status"></span>
+        </div>
+        <details class="hint">
+          <summary>四种格式怎么写</summary>
+          <h4>纯文本</h4>
+          <pre>1. 题干（ ）
+A. 甲
+B. 乙
+C. 丙
+D. 丁
+答案：A
+解析：可选，没有也行
+
+2. 判断题题干（ ）
+答案：正确</pre>
+          <h4>JSON</h4>
+          <pre>[{"stem":"题干","opts":{"A":"甲","B":"乙","C":"丙","D":"丁"},"ans":"A","type":"single","exp":"可选","part":"可选"}]</pre>
+          <h4>CSV</h4>
+          <pre>题干,选项A,选项B,选项C,选项D,答案,解析,题型
+题干,甲,乙,丙,丁,A,,单选</pre>
+          <h4>Word</h4>
+          <pre>段落格式与纯文本相同（题号 + 选项行 + 答案）；
+也支持表格：表头为 题干/选项A/选项B/选项C/选项D/答案/解析/题型。</pre>
+        </details>
+      </div>
+      <div class="block">
+        <h2>已导入题库</h2>
+        <div id="bankList" class="banklist"></div>
+      </div>
+    </section>
+
+    <!-- 解析 -->
+    <section class="view" id="viewAi" aria-label="AI 解析">
+      <div class="block">
+        <h2>接口配置</h2>
+        <p class="intro">OpenAI 兼容接口。本地 Ollama 免 Key；DeepSeek 等云端服务需要填写 Key。</p>
+        <p class="tip" id="aiScope" style="margin:-4px 0 18px"></p>
+        <div class="grid2">
+          <label class="field">接口预设
+            <select id="aiPreset"></select>
+          </label>
+          <label class="field">模型名
+            <input id="aiModel" placeholder="deepseek-chat / qwen3.8-27b:q2">
+          </label>
+        </div>
+        <label class="field">接口地址（OpenAI 兼容）
+          <input id="aiBase" placeholder="https://api.deepseek.com/v1">
+        </label>
+        <label class="field" style="margin-top:12px">API Key
+          <input id="aiKey" type="password" autocomplete="off" placeholder="填写 Key（本地模型可留空）">
+        </label>
+        <div class="row-actions">
+          <button id="btnAiSave" type="button" class="btn">保存配置</button>
+          <button id="btnAiTest" type="button" class="btn">保存并测试</button>
+          <span id="aiStatus" class="status"></span>
+        </div>
+        <p class="tip">本地 Ollama 默认地址 http://127.0.0.1:11434/v1；首次加载模型可能需要 1–3 分钟。只发送题干、选项与答案，不发送任何做题记录或业务数据。</p>
+      </div>
+      <div class="block">
+        <h2>批量生成解析</h2>
+        <p class="intro">对当前选中题库里「没有解析」的题逐条生成，生成一条立即写回题库文件。</p>
+        <div class="grid2">
+          <label class="field">本次最多生成
+            <input id="batchLimit" type="number" min="1" max="1000" value="20">
+          </label>
+          <div class="row-actions" style="align-items:flex-end">
+            <button id="btnBatch" type="button" class="btn primary">开始生成</button>
+            <button id="btnBatchStop" type="button" class="btn" disabled>停止</button>
+          </div>
+        </div>
+        <div class="progress"><i id="batchBar"></i></div>
+        <p id="batchStatus" class="status">尚未开始</p>
+      </div>
+    </section>
+
+    <!-- 考试 -->
+    <section class="view" id="viewExam" aria-label="考试">
+      <div id="resultBlock" hidden>
+        <div class="scorewrap">
+          <div class="score"><span id="rsScore">0</span><small>分</small></div>
+        </div>
+        <div class="rsline">正确 <b id="rsCorrect">0</b>　错误 <b id="rsWrong">0</b>　未答 <b id="rsBlank">0</b>　用时 <b id="rsTime">0:00</b></div>
+        <div id="rsWrongList" class="wronglist"></div>
+        <div class="row-actions">
+          <button id="btnRsRetry" type="button" class="btn primary">错题重考</button>
+          <span class="status" id="rsTag"></span>
+        </div>
+        <svg class="brush-hr" viewBox="0 0 420 12" preserveAspectRatio="none" aria-hidden="true" style="margin-top:26px">
+          <path d="M2 7 C 62 4.4, 122 9, 192 6.2 S 318 8.8, 418 5" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="block">
+        <h2>题源</h2>
+        <div class="chips" id="exSrcChips">
+          <button type="button" class="chip" data-src="筛选">当前筛选 <em data-cnt="筛选">0</em></button>
+          <button type="button" class="chip" data-src="收藏">收藏题 <em data-cnt="收藏">0</em></button>
+          <button type="button" class="chip" data-src="错题">错题 <em data-cnt="错题">0</em></button>
+        </div>
+      </div>
+      <div class="block">
+        <h2>题量与时长</h2>
+        <div class="chips" id="exNChips">
+          <button type="button" class="chip" data-n="10">10 题</button>
+          <button type="button" class="chip" data-n="20">20 题</button>
+          <button type="button" class="chip" data-n="50">50 题</button>
+          <button type="button" class="chip" data-n="0">全部</button>
+        </div>
+        <div class="grid2" style="margin-top:18px">
+          <label class="field">考试时长（分钟）
+            <input id="exMinutes" type="number" min="0" max="600" step="1" value="30">
+          </label>
+          <div class="exinfo">
+            <p>可抽题 <b id="exAvail">0</b> 题 · 本卷 <b id="exPlan">0</b> 题</p>
+            <p class="tip">填 0 = 不限时；到 0 自动交卷</p>
+          </div>
+        </div>
+        <div class="row-actions">
+          <button id="btnExamStart" type="button" class="btn cinnabar">开始考试</button>
+        </div>
+        <p class="tip">考试中不判分；交卷后统一判分，错题自动写入错题本。</p>
+      </div>
+    </section>
+
+    <!-- 统计 -->
+    <section class="view" id="viewStats" aria-label="统计">
+      <div class="statline" style="animation:none">
+        <span>总题量<b id="ssTotal">0</b></span>
+        <span>已作答<b id="ssDone">0</b></span>
+        <span>正确率<b id="ssAcc">0%</b></span>
+        <span>收藏<b id="ssFav">0</b></span>
+        <span>错题<b id="ssWrong">0</b></span>
+      </div>
+      <div class="block">
+        <h2>分题库进度</h2>
+        <div id="bankStatTable" class="statlist"></div>
+      </div>
+      <div class="row-actions">
+        <button id="btnReset" type="button" class="link danger">清空做题记录</button>
+        <button id="btnClearFav" type="button" class="link danger">清空收藏</button>
+      </div>
+      <p class="tip">清空做题记录不会清空收藏；错题本随做题记录一起清空。</p>
+    </section>
+
+    <!-- 个人主页 -->
+    <section class="view" id="viewProfile" aria-label="个人主页">
+      <div class="block" id="profileGuest">
+        <h2>个人主页</h2>
+        <p class="intro">登录后可查看账号信息、做题统计与修改密码。账号只存在本机 quiz.db，没有账号可直接注册。</p>
+        <button type="button" class="btn cinnabar" id="btnProfileLogin">登录 / 注册</button>
+      </div>
+
+      <div id="profileMain" hidden>
+        <div class="block">
+          <div class="profile-head">
+            <div class="profile-avatar" id="pfAvatar">青</div>
+            <div class="profile-id">
+              <h2 id="pfName">—</h2>
+              <p id="pfEmail">—</p>
+              <p id="pfMeta">—</p>
+            </div>
+          </div>
+          <div class="pf-cards">
+            <div class="pf-card"><em>已作答</em><b id="pfDone">0</b></div>
+            <div class="pf-card"><em>正确率</em><b><span id="pfAcc">0</span><small>%</small></b></div>
+            <div class="pf-card"><em>收藏</em><b id="pfFav">0</b></div>
+            <div class="pf-card"><em>错题</em><b id="pfWrong">0</b></div>
+            <div class="pf-card"><em>题库总量</em><b id="pfTotal">0</b></div>
+          </div>
+        </div>
+
+        <div class="block">
+          <h2>账号资料</h2>
+          <div class="grid2">
+            <label class="field">称呼
+              <input id="pfNameInput" maxlength="24" autocomplete="nickname">
+            </label>
+            <label class="field">邮箱
+              <input id="pfEmailInput" disabled>
+            </label>
+          </div>
+          <div class="row-actions" style="margin-top:0">
+            <button type="button" class="btn" id="btnSaveProfile">保存称呼</button>
+            <span class="status" id="pfStatus"></span>
+          </div>
+        </div>
+
+        <div class="block">
+          <h2>修改密码</h2>
+          <p class="intro">需要验证原密码。忘记原密码时，先在下方配置好邮件服务，再到登录框点「忘记密码」，用邮箱验证码重置。</p>
+          <div class="grid2">
+            <label class="field">原密码
+              <input id="pfOldPass" type="password" autocomplete="current-password">
+            </label>
+            <label class="field">新密码
+              <input id="pfNewPass" type="password" autocomplete="new-password" placeholder="至少 6 位">
+            </label>
+          </div>
+          <div class="row-actions" style="margin-top:0">
+            <button type="button" class="btn" id="btnChangePass">修改密码</button>
+            <span class="status" id="pfPassStatus"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h2>邮件服务（验证码）</h2>
+        <p class="intro">注册验证与找回密码的邮件从这里发出。QQ 邮箱：smtp.qq.com / 465 / SSL；163：smtp.163.com / 465 / SSL；Gmail：smtp.gmail.com / 587 / STARTTLS。密码一栏填邮箱的「授权码」，不是登录密码。</p>
+        <p class="tip" id="mailStatus" style="margin:-6px 0 14px">读取中…</p>
+        <div class="grid2">
+          <label class="field">SMTP 服务器
+            <input id="mailHost" placeholder="smtp.qq.com">
+          </label>
+          <label class="field">端口
+            <input id="mailPort" type="number" min="1" max="65535" value="465">
+          </label>
+        </div>
+        <div class="grid2">
+          <label class="field">发件邮箱
+            <input id="mailUser" type="email" autocomplete="off" placeholder="you@qq.com">
+          </label>
+          <label class="field">授权码 / 密码
+            <input id="mailPass" type="password" autocomplete="off" placeholder="留空表示不修改">
+          </label>
+        </div>
+        <div class="grid2">
+          <label class="field">发件人名称
+            <input id="mailFrom" maxlength="32" placeholder="青简刷题系统">
+          </label>
+          <label class="field">加密方式
+            <select id="mailSsl">
+              <option value="1">SSL（465，QQ / 163）</option>
+              <option value="0">STARTTLS（587，Gmail）</option>
+            </select>
+          </label>
+        </div>
+        <div class="row-actions" style="margin-top:0">
+          <button type="button" class="btn" id="btnMailSave">保存邮件配置</button>
+          <button type="button" class="btn" id="btnMailTest">发送测试邮件</button>
+          <span class="status" id="mailSaveStatus"></span>
+        </div>
+        <p class="tip">授权码明文存在本机 smtp.json，只用于发验证码，不会发给任何第三方。测试邮件会发到上面的发件邮箱。</p>
+      </div>
+    </section>
+
+    <footer>青简 · 本地题库与解析均存于本机磁盘</footer>
+  </main>
+</div>
+
+<div id="toast" class="toast" role="status"></div>
+
+<!-- 登录 / 注册 -->
+<div class="auth-veil" id="authVeil" hidden>
+  <div class="auth-box" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <button type="button" class="auth-close" id="authClose" aria-label="关闭">×</button>
+    <div class="seal" aria-hidden="true">青简</div>
+    <h2 id="authTitle">登录</h2>
+    <p class="auth-sub" id="authSub">本系统需登录使用；登录后做题进度与接口配置跟随账号。</p>
+    <label class="field">邮箱
+      <input id="authEmail" type="email" autocomplete="username" placeholder="you@example.com">
+    </label>
+    <label class="field"><span id="authPassLabel">密码</span>
+      <input id="authPass" type="password" autocomplete="current-password" placeholder="至少 6 位">
+    </label>
+    <label class="field" id="authCodeField" hidden>邮箱验证码
+      <span class="auth-code">
+        <input id="authCode" type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="6 位数字">
+        <button type="button" class="link" id="authSendCode">发送验证码</button>
+      </span>
+    </label>
+    <label class="field" id="authNameField" hidden>称呼（可选）
+      <input id="authName" autocomplete="nickname" placeholder="留空则用邮箱前缀">
+    </label>
+    <p class="auth-msg" id="authMsg"></p>
+    <div class="auth-actions">
+      <button type="button" class="btn cinnabar" id="authSubmit">登录</button>
+      <button type="button" class="link" id="authSwitch">没有账号？去注册</button>
+    </div>
+    <p class="auth-alt" id="authForgotRow"><button type="button" class="link" id="authForgot">忘记密码？</button></p>
+    <p class="auth-alt" id="authMailRow" hidden><button type="button" class="link" id="authMailLink">去「我的」页配置邮件服务</button></p>
+    <p class="tip">账号只存在本机 quiz.db，密码加盐哈希存储；注册需要邮箱验证码，请先在「我的」页配置邮件服务。</p>
+  </div>
+</div>
+
+<div id="boot" class="boot"><div><div class="boot-seal">青简</div><p>正在展开题卷</p></div></div>
+
+<script>
+(function(){
+'use strict';
+
+const LS = {
+  done: 'quizsys_done_v1',
+  fav: 'quizsys_fav_v1',
+  banks: 'quizsys_banks_v1',
+  min: 'quizsys_exam_min_v1'
+};
+const TYPECN = {single:'单选', multi:'多选', judge:'判断'};
+const TYPES = [['全部','全部'],['single','单选'],['multi','多选'],['judge','判断']];
+const MODES = ['顺序','随机','未做','错题','收藏'];
+const VIEWS = {
+  quiz:  {el:'viewQuiz', title:'刷题', sub:'静心读题，逐题作答'},
+  banks: {el:'viewBanks', title:'题库', sub:'导入、分组与整理'},
+  ai:    {el:'viewAi', title:'解析', sub:'接入大模型，生成解题思路'},
+  exam:  {el:'viewExam', title:'考试', sub:'自定题量与时长'},
+  stats: {el:'viewStats', title:'统计', sub:'做题记录与正确率'},
+  profile: {el:'viewProfile', title:'我的', sub:'账号、统计与邮件设置'}
+};
+
+let BANKS = [];
+let BANK_DATA = {};
+let ALL = [];
+let QMAP = {};
+let selected = [];
+let records = readLS(LS.done, {}) || {};
+let fav = readLS(LS.fav, {}) || {};
+let filters = {type:'全部', part:'全部', mode:'顺序'};
+let queue = [];
+let qi = 0;
+let cur = null;
+let pendingMulti = {};
+let cfg = {presets:{}};
+let exam = null;
+let examPick = {src:'筛选', n:20};
+let lastResultIds = [];
+let lastExamMinutes = 0;
+let batchRunning = false;
+let batchStop = false;
+let currentView = 'quiz';
+let authUser = null;
+let authGate = false;
+let authMode = 'login';
+let mailReady = false;
+let codeTimer = 0;
+let codeTick = null;
+let pushTimer = null;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* 任何接口回 401 need_login 都拉回登录页，防止会话过期后界面还停在业务页 */
+const rawFetch = window.fetch.bind(window);
+window.fetch = async function(...args){
+  const res = await rawFetch(...args);
+  if(res.status === 401){
+    res.clone().json().then(j => {
+      if(j && j.need_login && !authUser) openAuthGate();
+    }).catch(() => {});
+  }
+  return res;
+};
+
+function readLS(k, def){
+  try { const v = localStorage.getItem(k); return v == null ? def : JSON.parse(v); }
+  catch(e){ return def; }
+}
+function writeLS(k, v){
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){}
+}
+function bankUrl(id){
+  return '/api/bank/' + String(id).split('/').map(encodeURIComponent).join('/');
+}
+function bankMeta(id){
+  return BANKS.find(b => b.id === id) || {name:id, group:''};
+}
+function bankName(id){ return bankMeta(id).name; }
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function fmtDur(sec){
+  sec = Math.max(0, Math.floor(sec));
+  const h = Math.floor(sec/3600), m = Math.floor(sec%3600/60), s = sec%60;
+  return h ? (h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0'))
+           : (m + ':' + String(s).padStart(2,'0'));
+}
+
+/* ---------------- 账号与会话 ---------------- */
+function renderSideUser(){
+  const box = $('sideUser');
+  if(!box) return;
+  if(authUser){
+    box.innerHTML =
+      '<div class="who">已登录<b>' + esc(authUser.name || authUser.email) + '</b></div>' +
+      '<div class="row"><button type="button" class="link" id="btnGoProfile">个人主页</button>' +
+      '<button type="button" class="link" id="btnLogout">退出登录</button></div>';
+    $('btnGoProfile').onclick = () => showView('profile');
+    $('btnLogout').onclick = logout;
+  }else{
+    box.innerHTML =
+      '<div class="who">未登录 · 请先登录</div>' +
+      '<div class="row"><button type="button" class="link" id="btnOpenAuth">登录 / 注册</button></div>';
+    $('btnOpenAuth').onclick = () => openAuth('login');
+  }
+}
+function openAuth(mode){
+  authMode = (mode === 'register' || mode === 'reset') ? mode : 'login';
+  const reg = authMode === 'register';
+  const reset = authMode === 'reset';
+  const showCode = reset || reg;
+  $('authTitle').textContent = reset ? '重置密码' : (reg ? '注册' : '登录');
+  $('authSub').textContent = reset
+    ? '用邮箱验证码设置新密码，重置后自动登录。'
+    : (reg ? '用邮箱注册：先获取邮箱验证码，验证邮箱真实性后完成注册。' : '本系统需登录使用；登录后做题进度与接口配置跟随账号。');
+  $('authPassLabel').textContent = reset ? '新密码' : '密码';
+  $('authNameField').hidden = !reg;
+  $('authCodeField').hidden = !showCode;
+  $('authSubmit').textContent = reset ? '重置并登录' : (reg ? '注册' : '登录');
+  $('authSwitch').textContent = reset ? '返回登录' : (reg ? '已有账号？去登录' : '没有账号？去注册');
+  $('authForgotRow').hidden = authMode !== 'login';
+  $('authMailRow').hidden = !((reg || reset) && !mailReady);
+  $('authPass').setAttribute('autocomplete', (reg || reset) ? 'new-password' : 'current-password');
+  $('authMsg').textContent = (reg || reset) && !mailReady
+    ? '邮件服务尚未配置，无法发送验证码。请先到「我的」页填写 SMTP。' : '';
+  $('authPass').value = '';
+  $('authCode').value = '';
+  resetCodeButton();
+  $('authVeil').hidden = false;
+  $('authClose').hidden = authGate;
+  setTimeout(() => $('authEmail').focus(), 40);
+}
+function openAuthGate(){
+  if(authUser) return;
+  authGate = true;
+  if($('authVeil').hidden) openAuth('login');
+  $('authClose').hidden = true;
+}
+function closeAuth(){
+  if(authGate && !authUser) return;
+  authGate = false;
+  $('authClose').hidden = false;
+  $('authVeil').hidden = true;
+}
+function resetCodeButton(){
+  clearInterval(codeTick);
+  codeTick = null;
+  codeTimer = 0;
+  const b = $('authSendCode');
+  if(b){ b.disabled = false; b.textContent = '发送验证码'; }
+}
+function startCodeCountdown(sec){
+  clearInterval(codeTick);
+  codeTimer = Math.max(1, Number(sec) || 60);
+  const b = $('authSendCode');
+  const tick = () => {
+    if(!b) return;
+    if(codeTimer <= 0){
+      clearInterval(codeTick);
+      codeTick = null;
+      b.disabled = false;
+      b.textContent = '发送验证码';
+      return;
+    }
+    b.disabled = true;
+    b.textContent = '重发 ' + codeTimer + 's';
+    codeTimer--;
+  };
+  tick();
+  codeTick = setInterval(tick, 1000);
+}
+async function sendAuthCode(){
+  const email = $('authEmail').value.trim();
+  if(!email){ $('authMsg').textContent = '请先填写邮箱'; return; }
+  const b = $('authSendCode');
+  b.disabled = true;
+  $('authMsg').textContent = '';
+  try{
+    const purpose = authMode === 'reset' ? 'reset' : 'register';
+    const r = await fetch('/api/auth/send-code', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email, purpose:purpose})
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok || j.error) throw new Error(j.error || '发送失败');
+    startCodeCountdown(j.cooldown || 60);
+    $('authMsg').textContent = '验证码已发送，请查收邮件（含垃圾箱）';
+  }catch(e){
+    b.disabled = false;
+    $('authMsg').textContent = e.message;
+  }
+}
+async function submitAuth(){
+  const email = $('authEmail').value.trim();
+  const password = $('authPass').value;
+  if(!email || !password){ $('authMsg').textContent = '请填写邮箱与密码'; return; }
+  const needCode = !$('authCodeField').hidden;
+  const code = $('authCode').value.trim();
+  if(needCode && !/^\d{6}$/.test(code)){
+    $('authMsg').textContent = '请先获取并填写 6 位邮箱验证码';
+    return;
+  }
+  const btn = $('authSubmit');
+  btn.disabled = true;
+  $('authMsg').textContent = '';
+  try{
+    const body = {email:email, password:password};
+    if(needCode) body.code = code;
+    if(authMode === 'register'){
+      const name = $('authName').value.trim();
+      if(name) body.name = name;
+    }
+    const path = authMode === 'reset' ? 'reset' : authMode;
+    const r = await fetch('/api/auth/' + path, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok || j.error) throw new Error(j.error || '操作失败');
+    const wasReset = authMode === 'reset';
+    const wasRegister = authMode === 'register';
+    authUser = j.user || null;
+    authGate = false;
+    closeAuth();
+    renderSideUser();
+    toast(wasReset ? '密码已重置，已登录' : (wasRegister ? '注册成功，已登录' : '已登录'));
+    await loadConfig();
+    await refreshBanks({first:true});
+    await pullProgress();
+    if(currentView === 'profile') loadProfile();
+  }catch(e){
+    if((authMode === 'register' || authMode === 'reset') && !mailReady){
+      await loadMailState();
+      if(mailReady) $('authMailRow').hidden = true;
+    }
+    $('authMsg').textContent = e.message;
+  }finally{
+    btn.disabled = false;
+  }
+}
+async function logout(){
+  try{ await fetch('/api/auth/logout', {method:'POST'}); }catch(e){}
+  authUser = null;
+  location.reload();
+}
+async function loadMailState(){
+  try{
+    const r = await fetch('/api/mail/config', {cache:'no-store'});
+    const j = await r.json();
+    mailReady = !!j.configured;
+  }catch(e){
+    mailReady = false;
+  }
+}
+async function loadMe(){
+  try{
+    const r = await fetch('/api/auth/me', {cache:'no-store'});
+    const j = await r.json();
+    authUser = j.user || null;
+  }catch(e){ authUser = null; }
+  renderSideUser();
+}
+function schedulePush(){
+  if(!authUser) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(pushProgress, 1200);
+}
+async function pushProgress(){
+  if(!authUser) return;
+  try{
+    await fetch('/api/progress', {
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({done:records, fav:fav})
+    });
+  }catch(e){ /* 离线时留在本地，下次登录再合并 */ }
+}
+async function pullProgress(){
+  if(!authUser) return;
+  try{
+    const r = await fetch('/api/progress', {cache:'no-store'});
+    if(!r.ok) return;
+    const j = await r.json();
+    const remoteDone = (j.done && typeof j.done === 'object') ? j.done : {};
+    const remoteFav = (j.fav && typeof j.fav === 'object') ? j.fav : {};
+    const merged = Object.assign({}, remoteDone);
+    for(const k in records){
+      const a = merged[k], b = records[k];
+      if(!a || (b && (Number(b.t) || 0) > (Number(a.t) || 0))) merged[k] = b;
+    }
+    records = merged;
+    fav = Object.assign({}, remoteFav, fav);
+    writeLS(LS.done, records);
+    writeLS(LS.fav, fav);
+    buildQueue();
+    render();
+    if(currentView === 'stats') renderStatsSheet();
+    await pushProgress();
+  }catch(e){
+    console.warn('同步进度失败', e);
+  }
+}
+
+/* ---------------- 个人主页 ---------------- */
+async function loadProfile(){
+  const guest = $('profileGuest'), main = $('profileMain');
+  if(!guest || !main) return;
+  if(!authUser){
+    guest.hidden = false;
+    main.hidden = true;
+    return;
+  }
+  guest.hidden = true;
+  main.hidden = false;
+  try{
+    await pushProgress();
+    const r = await fetch('/api/profile', {cache:'no-store'});
+    if(r.status === 401){
+      authUser = null;
+      renderSideUser();
+      guest.hidden = false;
+      main.hidden = true;
+      openAuthGate();
+      return;
+    }
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok || j.error) throw new Error(j.error || '加载失败');
+    const u = j.user || {}, st = j.stats || {};
+    const name = u.name || u.email || '青简用户';
+    $('pfAvatar').textContent = Array.from(name)[0] || '青';
+    $('pfName').textContent = name;
+    $('pfEmail').textContent = u.email || '';
+    $('pfMeta').textContent = '加入于 ' + (u.created_at || '—') + ' · 最近登录 ' + (u.last_login || u.created_at || '—');
+    $('pfDone').textContent = st.done || 0;
+    $('pfAcc').textContent = st.accuracy || 0;
+    $('pfFav').textContent = st.fav || 0;
+    $('pfWrong').textContent = st.wrong || 0;
+    $('pfTotal').textContent = (st.total || 0) + ' 题 / ' + (st.banks || 0) + ' 库';
+    $('pfNameInput').value = u.name || '';
+    $('pfEmailInput').value = u.email || '';
+    mailReady = !!j.mail_configured;
+    $('pfStatus').textContent =
+      (j.llm_configured ? 'AI 接口：个人配置已保存' : 'AI 接口：使用全局配置') +
+      ' · 邮件服务：' + (mailReady ? '已配置' : '未配置');
+  }catch(e){
+    $('pfStatus').textContent = '加载失败：' + e.message;
+  }
+}
+async function saveProfileName(){
+  const box = $('pfStatus');
+  const name = $('pfNameInput').value.trim();
+  if(!name){ box.textContent = '称呼不能为空'; return; }
+  try{
+    const r = await fetch('/api/profile', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:name})
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok || j.error) throw new Error(j.error || '保存失败');
+    authUser = j.user || authUser;
+    renderSideUser();
+    await loadProfile();
+    toast('称呼已更新');
+  }catch(e){
+    box.textContent = e.message;
+  }
+}
+async function changePassword(){
+  const box = $('pfPassStatus');
+  const oldP = $('pfOldPass').value;
+  const newP = $('pfNewPass').value;
+  if(!oldP || !newP){ box.textContent = '请填写原密码与新密码'; return; }
+  if(newP.length < 6){ box.textContent = '新密码至少 6 位'; return; }
+  try{
+    const r = await fetch('/api/auth/password', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({old_password:oldP, new_password:newP})
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok || j.error) throw new Error(j.error || '修改失败');
+    $('pfOldPass').value = '';
+    $('pfNewPass').value = '';
+    box.textContent = '密码已更新';
+    toast('密码已修改');
+  }catch(e){
+    box.textContent = e.message;
+  }
+}
+async function loadMailForm(){
+  try{
+    const r = await fetch('/api/mail/config', {cache:'no-store'});
+    const j = await r.json();
+    mailReady = !!j.configured;
+    $('mailHost').value = j.host || '';
+    $('mailPort').value = j.port || 465;
+    $('mailUser').value = j.user || '';
+    $('mailFrom').value = j.from_name || '';
+    $('mailSsl').value = j.ssl ? '1' : '0';
+    $('mailPass').value = '';
+    $('mailPass').placeholder = j.has_password
+      ? '已保存授权码（留空不改）' : 'QQ / 163 填授权码，不是登录密码';
+    $('mailStatus').textContent = j.configured
+      ? '邮件服务已配置：注册与找回密码会发送验证码。'
+      : '邮件服务未配置：无法注册与找回密码，请先填写下方 SMTP 信息。';
+  }catch(e){
+    $('mailStatus').textContent = '读取配置失败：' + e.message;
+  }
+}
+async function saveMailConfig(){
+  const box = $('mailSaveStatus');
+  const body = {
+    host: $('mailHost').value.trim(),
+    port: Number($('mailPort').value) || 465,
+    ssl: $('mailSsl').value === '1',
+    user: $('mailUser').value.trim(),
+    from_name: $('mailFrom').value.trim(),
+    password: $('mailPass').value
+  };
+  try{
+    const r = await fetch('/api/mail/config', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok || j.error) throw new Error(j.error || '保存失败');
+    mailReady = !!j.configured;
+    box.textContent = j.configured
+      ? '已保存，可发送测试邮件' : '已保存，但还缺服务器 / 发件邮箱 / 授权码';
+    await loadMailForm();
+    toast('邮件配置已保存');
+  }catch(e){
+    box.textContent = e.message;
+  }
+}
+async function testMail(){
+  const box = $('mailSaveStatus');
+  box.textContent = '正在发送…';
+  try{
+    const r = await fetch('/api/mail/test', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok || j.error) throw new Error(j.error || '发送失败');
+    box.textContent = '测试邮件已发到 ' + j.to + '，请查收（含垃圾箱）';
+  }catch(e){
+    box.textContent = e.message;
+  }
+}
+
+/* ---------------- 水墨背景 ---------------- */
+let inkCanvas, inkCtx, inkW=0, inkH=0, inkDPR=1;
+let inkOff, inkOffCtx, OW=0, OH=0;
+let blobs=[], droplets=[], inkRaf=0, inkRunning=false, reducedMotion=false;
+let lastScrollY=0, lastFrame=0, lastDropAt=0, lastPointerAt=0, inkAcc=0;
+
+function initInk(){
+  reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  inkCanvas = $('ink');
+  inkCtx = inkCanvas.getContext('2d');
+  inkOff = document.createElement('canvas');
+  inkOffCtx = inkOff.getContext('2d');
+  resizeInk();
+  window.addEventListener('resize', resizeInk);
+  window.addEventListener('scroll', onInkScroll, {passive:true});
+  window.addEventListener('pointermove', onInkPointer, {passive:true});
+  document.addEventListener('visibilitychange', () => {
+    if(reducedMotion) return;
+    if(document.hidden){
+      inkRunning = false;
+      cancelAnimationFrame(inkRaf);
+    }else if(!inkRunning){
+      inkRunning = true;
+      lastFrame = 0;
+      inkAcc = 0;
+      inkRaf = requestAnimationFrame(inkLoop);
+    }
+  });
+  if(reducedMotion){
+    inkStatic();
+  }else{
+    inkRunning = true;
+    inkRaf = requestAnimationFrame(inkLoop);
+  }
+}
+function resizeInk(){
+  inkDPR = Math.min(2, window.devicePixelRatio || 1);
+  inkW = inkCanvas.width = Math.floor(window.innerWidth * inkDPR);
+  inkH = inkCanvas.height = Math.floor(window.innerHeight * inkDPR);
+  inkCanvas.style.width = window.innerWidth + 'px';
+  inkCanvas.style.height = window.innerHeight + 'px';
+  const scale = window.innerWidth < 760 ? 0.3 : 0.42;
+  OW = Math.max(180, Math.ceil(window.innerWidth * scale));
+  OH = Math.max(180, Math.ceil(window.innerHeight * scale));
+  inkOff.width = OW;
+  inkOff.height = OH;
+  inkOffCtx.clearRect(0, 0, OW, OH);
+  droplets = [];
+  seedInk();
+  if(reducedMotion) inkStatic();
+}
+function seedInk(){
+  const mobile = window.innerWidth < 760;
+  const n = mobile ? 12 : (window.innerWidth < 1300 ? 22 : 28);
+  blobs = [];
+  for(let i=0;i<n;i++){
+    const big = Math.random() < .3;
+    blobs.push({
+      x: Math.random() * OW,
+      y: Math.random() * OH,
+      vx: (Math.random() - .5) * .12,
+      vy: (Math.random() - .5) * .12,
+      r: big ? (44 + Math.random() * 54) : (14 + Math.random() * 32),
+      alpha: big ? (.0012 + Math.random() * .0018) : (.0035 + Math.random() * .0045),
+      phase: Math.random() * Math.PI * 2,
+      lobes: 2 + (Math.random() < .55 ? 1 : 0),
+      seed: Math.random() * 1000,
+      big: big
+    });
+  }
+}
+function flowAt(x, y, t){
+  const cx = x / OW, cy = y / OH;
+  const a = Math.sin(cy * 4.2 + t * .00011 + Math.cos(cx * 3.1)) + Math.cos(cx * 3.7 - t * .00009);
+  const b = Math.cos(cy * 3.3 - t * .00007) + Math.sin(cx * 4.4 + t * .00013);
+  return {
+    x: Math.cos(a * 1.9) * .26 + Math.sin(b * 1.4) * .14,
+    y: Math.sin(b * 1.8) * .24 + Math.cos(a * 2.2) * .12
+  };
+}
+function drawInkBlob(ctx, b, t, strength){
+  const breathe = 1 + .08 * Math.sin(t * .00035 + b.phase);
+  for(let i=0;i<b.lobes;i++){
+    const ang = b.phase + i * 2.3 + t * .00003;
+    const ox = Math.cos(ang) * b.r * .42;
+    const oy = Math.sin(ang * 1.27) * b.r * .38;
+    const rr = Math.max(2, b.r * (.52 + .16 * Math.sin(b.phase + i * 1.7)) * breathe);
+    const a = (b.alpha * strength).toFixed(5);
+    const g = ctx.createRadialGradient(b.x + ox, b.y + oy, 0, b.x + ox, b.y + oy, rr);
+    g.addColorStop(0, 'rgba(24,27,28,' + (b.alpha * .78 * strength).toFixed(5) + ')');
+    g.addColorStop(.35, 'rgba(27,30,31,' + (b.alpha * .62 * strength).toFixed(5) + ')');
+    g.addColorStop(.7, 'rgba(30,33,34,' + (b.alpha * .26 * strength).toFixed(5) + ')');
+    g.addColorStop(1, 'rgba(30,33,34,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(b.x + ox, b.y + oy, rr, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+function inkLoop(ts){
+  if(!inkRunning) return;
+  const dt = lastFrame ? (ts - lastFrame) : 16.7;
+  lastFrame = ts;
+  inkAcc += dt;
+  if(inkAcc < 30){
+    inkRaf = requestAnimationFrame(inkLoop);
+    return;
+  }
+  const step = Math.min(2.4, inkAcc / 16.7);
+  inkAcc = 0;
+  const t = ts;
+
+  inkOffCtx.globalCompositeOperation = 'destination-out';
+  inkOffCtx.fillStyle = 'rgba(0,0,0,' + (.03 * step).toFixed(4) + ')';
+  inkOffCtx.fillRect(0, 0, OW, OH);
+  inkOffCtx.globalCompositeOperation = 'source-over';
+
+  for(const b of blobs){
+    const f = flowAt(b.x, b.y, t);
+    b.vx += (f.x - b.vx) * .012 * step;
+    b.vy += (f.y - b.vy) * .012 * step;
+    b.x += b.vx * step;
+    b.y += b.vy * step;
+    const m = b.r * 1.2;
+    if(b.x < -m) b.x = OW + m;
+    if(b.x > OW + m) b.x = -m;
+    if(b.y < -m) b.y = OH + m;
+    if(b.y > OH + m) b.y = -m;
+    drawInkBlob(inkOffCtx, b, t, 1);
+  }
+  for(let i=droplets.length-1;i>=0;i--){
+    const d = droplets[i];
+    const f = flowAt(d.x, d.y, t);
+    d.vx += (f.x - d.vx) * .02 + Math.sin(t * .0004 + d.seed) * .01;
+    d.vy += (f.y - d.vy) * .02 + Math.cos(t * .00035 + d.seed) * .008;
+    d.x += d.vx * step;
+    d.y += d.vy * step;
+    d.r += .16 * step;
+    d.life -= .02 * step;
+    if(d.life <= 0){ droplets.splice(i, 1); continue; }
+    drawInkBlob(inkOffCtx, d, t, d.life);
+  }
+
+  inkCtx.clearRect(0, 0, inkW, inkH);
+  inkCtx.imageSmoothingEnabled = true;
+  inkCtx.filter = 'blur(' + (window.innerWidth < 760 ? 2 : 3) + 'px)';
+  inkCtx.globalAlpha = .5;
+  inkCtx.drawImage(inkOff, 0, 0, inkW, inkH);
+  inkCtx.filter = 'none';
+  inkCtx.globalAlpha = 1;
+  inkRaf = requestAnimationFrame(inkLoop);
+}
+function inkStatic(){
+  inkOffCtx.clearRect(0, 0, OW, OH);
+  for(const b of blobs){
+    for(let k=0;k<6;k++) drawInkBlob(inkOffCtx, b, 0, 8);
+  }
+  inkCtx.clearRect(0, 0, inkW, inkH);
+  inkCtx.filter = 'blur(' + (window.innerWidth < 760 ? 2 : 3) + 'px)';
+  inkCtx.globalAlpha = .5;
+  inkCtx.drawImage(inkOff, 0, 0, inkW, inkH);
+  inkCtx.filter = 'none';
+  inkCtx.globalAlpha = 1;
+}
+function onInkScroll(){
+  if(reducedMotion) return;
+  const y = window.scrollY || document.documentElement.scrollTop || 0;
+  const dy = y - lastScrollY;
+  lastScrollY = y;
+  const k = Math.max(-26, Math.min(26, dy * .08));
+  if(!k) return;
+  for(const b of blobs){
+    b.vy += k * .022;
+    b.vx += Math.sin(y * .001 + b.phase) * Math.abs(k) * .006;
+  }
+}
+function onInkPointer(e){
+  if(reducedMotion || !inkOff) return;
+  const now = performance.now();
+  if(now - lastPointerAt < 60) return;
+  lastPointerAt = now;
+  const x = (e.clientX / Math.max(1, window.innerWidth)) * OW;
+  const y = (e.clientY / Math.max(1, window.innerHeight)) * OH;
+  const rad = Math.max(54, OW * .12);
+  for(const b of blobs){
+    const dx = b.x - x, dy = b.y - y;
+    const d2 = dx * dx + dy * dy;
+    if(d2 < rad * rad){
+      const f = (1 - Math.sqrt(d2) / rad) * .9;
+      b.vx += -dy * f * .0007;
+      b.vy += dx * f * .0007;
+    }
+  }
+  if(now - lastDropAt > 150 && droplets.length < 12){
+    lastDropAt = now;
+    droplets.push({
+      x: x, y: y,
+      vx: (Math.random() - .5) * .3,
+      vy: (Math.random() - .5) * .3,
+      r: 5 + Math.random() * 9,
+      alpha: .004 + Math.random() * .004,
+      phase: Math.random() * Math.PI * 2,
+      lobes: 2,
+      seed: Math.random() * 1000,
+      life: 1
+    });
+  }
+}
+
+/* ---------------- 提示与数字 ---------------- */
+let toastTimer = null;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+function setNum(elm, value, suffix){
+  if(!elm) return;
+  suffix = suffix || '';
+  const key = String(value) + '|' + suffix;
+  if(elm.dataset.k === key) return;
+  const start = Number(elm.dataset.v || 0) || 0;
+  elm.dataset.k = key;
+  elm.dataset.v = String(value);
+  if(reducedMotion){ elm.textContent = value + suffix; return; }
+  const t0 = performance.now(), dur = 460;
+  function step(t){
+    const p = Math.min(1, (t - t0) / dur);
+    const v = Math.round(start + (value - start) * (1 - Math.pow(1 - p, 3)));
+    elm.textContent = v + suffix;
+    if(p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ---------------- 视图切换 ---------------- */
+function showView(name){
+  if(!VIEWS[name]) name = 'quiz';
+  const v = VIEWS[name];
+  currentView = name;
+  document.querySelectorAll('.view').forEach(el => el.classList.toggle('on', el.id === v.el));
+  document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === name));
+  $('headTitle').textContent = v.title;
+  $('headSub').textContent = v.sub;
+  if(name === 'banks') renderBankList();
+  if(name === 'ai') fillAiForm();
+  if(name === 'stats') renderStatsSheet();
+  if(name === 'exam') syncExamSheet();
+  if(name === 'profile'){
+    loadProfile();
+    loadMailForm();
+  }
+  window.scrollTo({top:0, behavior:reducedMotion ? 'auto' : 'smooth'});
+  if(!exam) document.title = '青简 · ' + v.title;
+}
+
+/* ---------------- 题库加载 ---------------- */
+async function refreshBanks(opts){
+  opts = opts || {};
+  try{
+    const r = await fetch('/api/banks', {cache:'no-store'});
+    const j = await r.json();
+    BANKS = j.banks || [];
+  }catch(e){
+    BANKS = [];
+    toast('无法连接后端服务，请确认 start.bat 已运行');
+  }
+  if(opts.first){
+    const stored = readLS(LS.banks, null);
+    if(Array.isArray(stored)) selected = stored.filter(id => BANKS.some(b => b.id === id));
+    else selected = BANKS.map(b => b.id);
+  }else{
+    selected = selected.filter(id => BANKS.some(b => b.id === id));
+  }
+  (opts.add || []).forEach(id => {
+    if(BANKS.some(b => b.id === id) && !selected.includes(id)) selected.push(id);
+  });
+  (opts.remove || []).forEach(id => { selected = selected.filter(x => x !== id); });
+  (opts.dropCache || []).forEach(id => { delete BANK_DATA[id]; });
+  selected = BANKS.map(b => b.id).filter(id => selected.includes(id));
+  if(!selected.length && BANKS.length) selected = [BANKS[0].id];
+  writeLS(LS.banks, selected);
+  await loadSelectedData();
+  rebuildAll();
+  renderBanks();
+  renderParts();
+  renderTypeChips();
+  renderModeChips();
+  buildQueue();
+  render();
+}
+async function loadSelectedData(){
+  await Promise.all(selected.map(async id => {
+    if(BANK_DATA[id]) return;
+    try{
+      const r = await fetch(bankUrl(id), {cache:'no-store'});
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      BANK_DATA[id] = await r.json();
+    }catch(e){
+      console.warn('题库加载失败', id, e);
+    }
+  }));
+}
+function rebuildAll(){
+  ALL = [];
+  QMAP = {};
+  selected.forEach(bid => {
+    const d = BANK_DATA[bid];
+    if(!d) return;
+    (d.questions || []).forEach(q => {
+      const key = bid + '|' + q.id;
+      const item = {key:key, bank:bid, q:q};
+      ALL.push(item);
+      QMAP[key] = item;
+    });
+  });
+}
+
+/* ---------------- 筛选 ---------------- */
+function byTypePart(x){
+  if(filters.type !== '全部' && x.q.type !== filters.type) return false;
+  if(filters.part !== '全部' && (x.q.part || '') !== filters.part) return false;
+  return true;
+}
+function filterMode(arr, mode){
+  if(mode === '未做') return arr.filter(x => !records[x.key]);
+  if(mode === '错题') return arr.filter(x => records[x.key] && records[x.key].ok === false);
+  if(mode === '收藏') return arr.filter(x => fav[x.key]);
+  return arr;
+}
+function buildQueue(){
+  let arr = ALL.filter(byTypePart);
+  arr = filterMode(arr, filters.mode).slice();
+  if(filters.mode === '随机') shuffle(arr);
+  queue = arr.map(x => x.key);
+  qi = 0;
+}
+async function applySelection(){
+  selected = BANKS.map(b => b.id).filter(id => selected.includes(id));
+  writeLS(LS.banks, selected);
+  await loadSelectedData();
+  rebuildAll();
+  renderBanks();
+  renderParts();
+  buildQueue();
+  render();
+}
+async function toggleBank(id){
+  if(!guardExam()) return;
+  if(selected.includes(id)){
+    if(selected.length === 1){ toast('至少保留一个题库'); return; }
+    selected = selected.filter(x => x !== id);
+  }else{
+    selected.push(id);
+  }
+  await applySelection();
+}
+async function toggleGroup(ids){
+  if(!guardExam()) return;
+  const allOn = ids.every(id => selected.includes(id));
+  if(allOn){
+    const remain = selected.filter(id => !ids.includes(id));
+    if(!remain.length){ toast('至少保留一个题库'); return; }
+    selected = remain;
+  }else{
+    ids.forEach(id => { if(!selected.includes(id)) selected.push(id); });
+  }
+  await applySelection();
+}
+function setFilter(k, v){
+  if(!guardExam()) return;
+  filters[k] = v;
+  if(k === 'type') renderTypeChips();
+  if(k === 'part') renderParts();
+  if(k === 'mode') renderModeChips();
+  buildQueue();
+  render();
+}
+
+/* ---------------- 界面渲染 ---------------- */
+function renderBanks(){
+  const wrap = $('bankChips');
+  wrap.innerHTML = '';
+  const groups = new Map();
+  BANKS.forEach(b => {
+    const g = b.group || '未分组';
+    if(!groups.has(g)) groups.set(g, []);
+    groups.get(g).push(b);
+  });
+  if(!BANKS.length){
+    const s = document.createElement('span');
+    s.className = 'status';
+    s.textContent = '题库目录为空 · 到「题库」导入';
+    wrap.appendChild(s);
+    return;
+  }
+  groups.forEach((banks, g) => {
+    const gd = document.createElement('div');
+    gd.className = 'bgroup';
+    const gl = document.createElement('button');
+    gl.type = 'button';
+    gl.className = 'glabel';
+    gl.innerHTML = '<span>' + esc(g) + '</span><i>' + banks.length + '</i>';
+    gl.title = '点击全选 / 取消本组';
+    gl.onclick = () => toggleGroup(banks.map(b => b.id));
+    gd.appendChild(gl);
+    const chips = document.createElement('div');
+    chips.className = 'chips';
+    banks.forEach(b => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chip bank' + (selected.includes(b.id) ? ' on' : '');
+      btn.title = b.name + ' · ' + b.total + ' 题' + (b.exp ? ' · 带解析 ' + b.exp : '');
+      btn.innerHTML = '<span>' + esc(b.name) + '</span><em>' + b.total + '</em>';
+      btn.onclick = () => toggleBank(b.id);
+      chips.appendChild(btn);
+    });
+    gd.appendChild(chips);
+    wrap.appendChild(gd);
+  });
+}
+function renderTypeChips(){
+  const w = $('typeChips');
+  w.innerHTML = '';
+  TYPES.forEach(([v, label]) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip' + (filters.type === v ? ' on' : '');
+    b.textContent = label;
+    b.onclick = () => setFilter('type', v);
+    w.appendChild(b);
+  });
+}
+function renderModeChips(){
+  const w = $('modeChips');
+  w.innerHTML = '';
+  MODES.forEach(m => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip' + (filters.mode === m ? ' on' : '');
+    b.textContent = m === '收藏' ? '收藏' : m;
+    b.onclick = () => setFilter('mode', m);
+    w.appendChild(b);
+  });
+}
+function renderParts(){
+  const w = $('partChips');
+  w.innerHTML = '';
+  const parts = Array.from(new Set(ALL.map(x => x.q.part || '')));
+  parts.sort((a, b) => a.localeCompare(b, 'zh'));
+  const values = ['全部'].concat(parts);
+  if(values.indexOf(filters.part) < 0) filters.part = '全部';
+  values.forEach(p => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip' + (filters.part === p ? ' on' : '');
+    b.textContent = p === '全部' ? '全部' : (p === '' ? '未分类' : p);
+    b.onclick = () => setFilter('part', p);
+    w.appendChild(b);
+  });
+}
+
+function updateStats(){
+  let done = 0, ok = 0, favN = 0;
+  for(const x of ALL){
+    const r = records[x.key];
+    if(r){ done++; if(r.ok) ok++; }
+    if(fav[x.key]) favN++;
+  }
+  setNum($('stTotal'), ALL.length);
+  setNum($('stDone'), done);
+  setNum($('stAcc'), done ? Math.round(ok/done*100) : 0, '%');
+  setNum($('stFav'), favN);
+}
+
+function emptyText(){
+  if(!BANKS.length) return '还没有题库。到「题库」导入，或把 JSON / TXT / CSV / Word 放进题库目录。';
+  if(!selected.length) return '先选择题库。';
+  if(!ALL.length) return '题库加载失败，请刷新页面或重启服务。';
+  if(filters.mode === '收藏') return '还没有收藏的题目，点题目右上角 ☆ 收藏。';
+  if(filters.mode === '错题') return '错题本是空的，继续保持。';
+  if(filters.mode === '未做') return '这个筛选下没有未做的题了。';
+  return '这个筛选下没有题目。';
+}
+
+function render(){
+  updateStats();
+  const card = $('qcard');
+  if(!queue.length){
+    cur = null;
+    card.classList.add('empty');
+    $('emptyState').hidden = false;
+    $('emptyText').textContent = emptyText();
+    $('stem').textContent = '';
+    $('opts').innerHTML = '';
+    $('feedback').className = 'feedback';
+    $('feedback').innerHTML = '';
+    $('expBox').hidden = true;
+    $('qProgress').textContent = '0 / 0';
+    $('qBank').textContent = '';
+    $('qType').textContent = '';
+    $('qPart').textContent = '';
+    $('btnFav').textContent = '☆';
+    $('btnFav').classList.remove('on');
+    $('btnSubmit').hidden = true;
+    $('btnPrev').disabled = true;
+    $('btnNext').disabled = true;
+    updateClock();
+    return;
+  }
+  card.classList.remove('empty');
+  $('emptyState').hidden = true;
+  const item = QMAP[queue[qi]];
+  if(!item){
+    queue = [];
+    render();
+    return;
+  }
+  cur = item;
+  const q = item.q, key = item.key;
+  const inExam = !!exam;
+  const rec = records[key];
+  const graded = !inExam && !!rec;
+
+  $('qProgress').textContent = (qi + 1) + ' / ' + queue.length;
+  $('qBank').textContent = bankName(item.bank);
+  $('qType').textContent = TYPECN[q.type] || '题目';
+  $('qPart').textContent = q.part || '';
+  $('qPart').style.display = q.part ? '' : 'none';
+  const isFav = !!fav[key];
+  $('btnFav').classList.toggle('on', isFav);
+  $('btnFav').textContent = isFav ? '★' : '☆';
+  $('stem').textContent = q.stem || '';
+
+  const chosen = inExam
+    ? (exam.answers[key] || '')
+    : (rec ? (rec.mine || '') : ((pendingMulti[key] || []).join('')));
+  const opts = Array.isArray(q.opts)
+    ? q.opts
+    : Object.keys(q.opts || {}).map(k => ({k:k, v:q.opts[k]}));
+  const box = $('opts');
+  box.innerHTML = '';
+  opts.forEach(o => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'opt';
+    const picked = chosen.indexOf(o.k) >= 0;
+    if(picked) b.classList.add('sel');
+    if(graded){
+      const isAns = (q.ans || '').indexOf(o.k) >= 0;
+      if(isAns) b.classList.add('ok');
+      if(picked && !isAns) b.classList.add('bad');
+    }
+    b.innerHTML = '<span class="k">' + esc(o.k) + '</span><span class="t">' + esc(o.v) + '</span>';
+    b.onclick = () => choose(o.k);
+    box.appendChild(b);
+  });
+
+  const fb = $('feedback');
+  if(inExam){
+    const ansN = exam.ids.filter(k => exam.answers[k]).length;
+    fb.className = 'feedback show examhint';
+    fb.innerHTML = '考试模式 · 已答 <b>' + ansN + '</b> / ' + exam.ids.length + ' 题，交卷后统一判分。';
+  }else if(graded){
+    fb.className = 'feedback show ' + (rec.ok ? 'ok' : 'bad');
+    fb.innerHTML = rec.ok
+      ? '回答正确 · 答案 <b>' + esc(q.ans) + '</b>'
+      : '回答错误 · 你的答案 ' + esc(rec.mine || '（空）') + ' · 正确答案 <b>' + esc(q.ans) + '</b>';
+  }else{
+    fb.className = 'feedback';
+    fb.innerHTML = '';
+  }
+
+  const expBox = $('expBox');
+  if(inExam){
+    expBox.hidden = true;
+  }else{
+    expBox.hidden = false;
+    const exp = (q.exp || '').trim();
+    const body = $('expBody');
+    body.textContent = exp || '本题暂无解析。可点右侧「AI 生成解析」，生成后自动保存到题库文件。';
+    body.classList.toggle('placeholder', !exp);
+    const gen = $('btnAiGen');
+    gen.hidden = false;
+    gen.disabled = false;
+    gen.textContent = exp ? '重新生成解析' : 'AI 生成解析';
+    gen.dataset.force = exp ? '1' : '0';
+  }
+
+  $('btnSubmit').hidden = !(!inExam && q.type === 'multi' && !rec);
+  $('btnPrev').disabled = qi <= 0;
+  $('btnNext').disabled = qi >= queue.length - 1;
+  updateClock();
+}
+
+/* ---------------- 答题 ---------------- */
+function choose(letter){
+  if(!cur) return;
+  const q = cur.q, key = cur.key;
+  if(exam){
+    let mine = exam.answers[key] || '';
+    if(q.type === 'multi'){
+      const set = new Set(mine.split('').filter(Boolean));
+      if(set.has(letter)) set.delete(letter); else set.add(letter);
+      mine = Array.from(set).sort().join('');
+    }else{
+      mine = (mine === letter) ? '' : letter;
+    }
+    exam.answers[key] = mine;
+    render();
+    return;
+  }
+  const rec = records[key];
+  if(q.type === 'multi'){
+    if(rec){ delete records[key]; writeLS(LS.done, records); schedulePush(); }
+    const arr = (pendingMulti[key] || []).slice();
+    const idx = arr.indexOf(letter);
+    if(idx >= 0) arr.splice(idx, 1); else arr.push(letter);
+    arr.sort();
+    if(arr.length) pendingMulti[key] = arr; else delete pendingMulti[key];
+    render();
+    return;
+  }
+  grade([letter]);
+}
+function grade(letters){
+  if(!cur) return;
+  const q = cur.q;
+  const mine = letters.slice().sort().join('');
+  const ok = mine === String(q.ans || '').split('').sort().join('');
+  records[cur.key] = {mine:mine, ok:ok, t:Date.now()};
+  delete pendingMulti[cur.key];
+  writeLS(LS.done, records);
+  schedulePush();
+  render();
+}
+function submitMulti(){
+  if(!cur) return;
+  const sel = pendingMulti[cur.key] || [];
+  if(!sel.length){ toast('请先选择答案'); return; }
+  grade(sel);
+}
+function toggleFav(){
+  if(!cur) return;
+  const key = cur.key;
+  if(fav[key]) delete fav[key]; else fav[key] = 1;
+  writeLS(LS.fav, fav);
+  schedulePush();
+  const st = $('btnFav');
+  st.classList.toggle('on', !!fav[key]);
+  st.textContent = fav[key] ? '★' : '☆';
+  st.classList.remove('pop');
+  void st.offsetWidth;
+  st.classList.add('pop');
+  if(filters.mode === '收藏' && !exam){
+    buildQueue();
+    render();
+  }else{
+    updateStats();
+  }
+}
+function go(delta){
+  if(!queue.length) return;
+  const n = qi + delta;
+  if(n < 0){ toast('已经是第一题'); return; }
+  if(n >= queue.length){ toast(exam ? '已是最后一题，可以交卷' : '已经是最后一题'); return; }
+  qi = n;
+  render();
+}
+
+/* ---------------- 收藏 / 错题 / 统计 ---------------- */
+function guardExam(){
+  if(!exam) return true;
+  if(window.confirm('考试进行中，继续操作会放弃本次考试。确定吗？')){
+    abortExam();
+    return true;
+  }
+  return false;
+}
+function abortExam(){
+  if(!exam) return;
+  clearInterval(exam.timer);
+  exam = null;
+  pendingMulti = {};
+  updateClock();
+  buildQueue();
+  render();
+  toast('已放弃本次考试');
+}
+function resetRecords(){
+  if(!guardExam()) return;
+  if(!window.confirm('确定清空全部做题记录与错题本？收藏会保留。')) return;
+  records = {};
+  pendingMulti = {};
+  writeLS(LS.done, records);
+  schedulePush();
+  buildQueue();
+  render();
+  renderStatsSheet();
+  toast('已清空做题记录');
+}
+function clearFav(){
+  if(!guardExam()) return;
+  if(!window.confirm('确定清空全部收藏？')) return;
+  fav = {};
+  writeLS(LS.fav, fav);
+  schedulePush();
+  buildQueue();
+  render();
+  renderStatsSheet();
+  toast('已清空收藏');
+}
+function renderStatsSheet(){
+  let done = 0, ok = 0, favN = 0, wrongN = 0;
+  for(const x of ALL){
+    const r = records[x.key];
+    if(r){ done++; if(r.ok) ok++; else wrongN++; }
+    if(fav[x.key]) favN++;
+  }
+  setNum($('ssTotal'), ALL.length);
+  setNum($('ssDone'), done);
+  setNum($('ssAcc'), done ? Math.round(ok/done*100) : 0, '%');
+  setNum($('ssFav'), favN);
+  setNum($('ssWrong'), wrongN);
+  const wrap = $('bankStatTable');
+  wrap.innerHTML = '';
+  if(!selected.length){
+    wrap.innerHTML = '<p class="status">没有选中的题库。</p>';
+    return;
+  }
+  selected.forEach(bid => {
+    const b = bankMeta(bid);
+    const qs = (BANK_DATA[bid] || {}).questions || [];
+    let d = 0, o = 0;
+    qs.forEach(q => {
+      const r = records[bid + '|' + q.id];
+      if(r){ d++; if(r.ok) o++; }
+    });
+    const row = document.createElement('div');
+    row.className = 'statrow';
+    row.innerHTML =
+      '<span class="sname">' + esc(b.name) + '<em>' + esc(b.group || '未分组') + '</em></span>' +
+      '<span class="snum">' + qs.length + ' 题</span>' +
+      '<span class="snum">已做 ' + d + '</span>' +
+      '<span class="sacc">' + (d ? Math.round(o/d*100) : 0) + '%</span>' +
+      '<div class="sbar"><i style="width:' + (qs.length ? Math.round(d/qs.length*100) : 0) + '%"></i></div>';
+    wrap.appendChild(row);
+  });
+}
+
+/* ---------------- 考试 ---------------- */
+function filteredBase(){ return ALL.filter(byTypePart); }
+function examPool(src){
+  const base = filteredBase();
+  if(src === '收藏') return base.filter(x => fav[x.key]);
+  if(src === '错题') return base.filter(x => records[x.key] && records[x.key].ok === false);
+  return filterMode(base, filters.mode);
+}
+function syncExamSheet(){
+  const base = filteredBase();
+  const counts = {
+    '筛选': filterMode(base, filters.mode).length,
+    '收藏': base.filter(x => fav[x.key]).length,
+    '错题': base.filter(x => records[x.key] && records[x.key].ok === false).length
+  };
+  document.querySelectorAll('#exSrcChips .chip').forEach(b => {
+    b.classList.toggle('on', b.dataset.src === examPick.src);
+    const em = b.querySelector('[data-cnt]');
+    if(em) em.textContent = counts[b.dataset.src] || 0;
+  });
+  document.querySelectorAll('#exNChips .chip').forEach(b => {
+    b.classList.toggle('on', Number(b.dataset.n) === examPick.n);
+  });
+  const avail = counts[examPick.src] || 0;
+  const plan = examPick.n > 0 ? Math.min(examPick.n, avail) : avail;
+  $('exAvail').textContent = avail;
+  $('exPlan').textContent = plan;
+  const start = $('btnExamStart');
+  start.disabled = avail === 0 || !!exam;
+  start.textContent = exam ? '考试进行中' : '开始考试';
+  const inp = $('exMinutes');
+  if(!inp.dataset.init){
+    const m = readLS(LS.min, 30);
+    inp.value = (typeof m === 'number' && m >= 0) ? m : 30;
+    inp.dataset.init = '1';
+  }
+}
+function startExam(){
+  if(exam){ toast('考试进行中，请先交卷'); return; }
+  const pool = examPool(examPick.src);
+  if(!pool.length){ toast('该题源下没有题目'); return; }
+  const n = examPick.n > 0 ? Math.min(examPick.n, pool.length) : pool.length;
+  const arr = shuffle(pool.slice()).slice(0, n);
+  const ids = arr.map(x => x.key);
+  let mins = Number($('exMinutes').value);
+  if(!Number.isFinite(mins) || mins < 0) mins = 0;
+  mins = Math.min(600, Math.round(mins));
+  writeLS(LS.min, mins);
+  exam = {ids:ids, answers:{}, start:Date.now(), limit:mins*60, timer:null};
+  lastExamMinutes = mins;
+  queue = ids.slice();
+  qi = 0;
+  pendingMulti = {};
+  $('resultBlock').hidden = true;
+  showView('quiz');
+  startClock();
+  render();
+  toast('考试开始' + (mins ? ' · ' + mins + ' 分钟' : ' · 不限时'));
+}
+function startClock(){
+  if(!exam) return;
+  if(exam.timer) clearInterval(exam.timer);
+  updateClock();
+  exam.timer = setInterval(() => {
+    if(!exam) return;
+    updateClock();
+    if(exam.limit > 0 && remainSec() <= 0) finishExam(true);
+  }, 500);
+}
+function remainSec(){
+  if(!exam || !exam.limit) return Infinity;
+  return Math.max(0, exam.limit - Math.floor((Date.now() - exam.start)/1000));
+}
+function updateClock(){
+  const c = $('examClock'), strip = $('examStrip');
+  if(!exam){
+    strip.classList.add('hidden');
+    c.classList.remove('urgent');
+    c.textContent = '';
+    if(currentView) document.title = '青简 · ' + VIEWS[currentView].title;
+    return;
+  }
+  strip.classList.remove('hidden');
+  $('stripAnswered').textContent = '已答 ' + exam.ids.filter(k => exam.answers[k]).length + ' / ' + exam.ids.length;
+  if(exam.limit > 0){
+    const r = remainSec();
+    c.textContent = '剩余 ' + fmtDur(r);
+    c.classList.toggle('urgent', r <= 60);
+    document.title = '剩余 ' + fmtDur(r) + ' · 青简';
+  }else{
+    c.textContent = '不限时 · 已用 ' + fmtDur((Date.now() - exam.start)/1000);
+    c.classList.remove('urgent');
+    document.title = '考试中 · 青简';
+  }
+}
+function toggleClock(){ updateClock(); }
+function askSubmit(){
+  if(!exam) return;
+  const blank = exam.ids.filter(k => !exam.answers[k]).length;
+  if(blank > 0 && !window.confirm('还有 ' + blank + ' 题未作答，确定交卷吗？')) return;
+  finishExam(false);
+}
+function finishExam(auto){
+  if(!exam) return;
+  clearInterval(exam.timer);
+  const ids = exam.ids.slice();
+  const limit = exam.limit;
+  const start = exam.start;
+  const answers = exam.answers;
+  const now = Date.now();
+  let correct = 0, wrong = 0, blank = 0;
+  const wrongItems = [];
+  ids.forEach(key => {
+    const item = QMAP[key];
+    if(!item) return;
+    const q = item.q;
+    const mine = String(answers[key] || '').split('').sort().join('');
+    const ans = String(q.ans || '').split('').sort().join('');
+    if(!mine){ blank++; records[key] = {mine:'', ok:false, t:now}; wrongItems.push({key:key, mine:''}); }
+    else if(mine === ans){ correct++; records[key] = {mine:mine, ok:true, t:now}; }
+    else { wrong++; records[key] = {mine:mine, ok:false, t:now}; wrongItems.push({key:key, mine:mine}); }
+  });
+  writeLS(LS.done, records);
+  const elapsed = Math.floor((now - start)/1000);
+  const total = ids.length;
+  const score = total ? Math.round(correct/total*100) : 0;
+  lastResultIds = wrongItems.map(x => x.key);
+  lastExamMinutes = limit ? Math.round(limit/60) : 0;
+  exam = null;
+  pendingMulti = {};
+  buildQueue();
+  updateClock();
+  render();
+  $('rsTag').textContent = auto ? '时间到 · 自动交卷' : '已交卷';
+  setNum($('rsScore'), score);
+  $('rsCorrect').textContent = correct;
+  $('rsWrong').textContent = wrong;
+  $('rsBlank').textContent = blank;
+  $('rsTime').textContent = fmtDur(elapsed);
+  const wl = $('rsWrongList');
+  if(wrongItems.length){
+    let html = '';
+    wrongItems.slice(0, 8).forEach(it => {
+      const x = QMAP[it.key];
+      if(!x) return;
+      const st = String(x.q.stem || '');
+      html += '<div class="witem"><span class="wstem">' +
+        esc(st.length > 46 ? st.slice(0,46) + '…' : st) +
+        '</span><span class="wans">你选 ' + esc(it.mine || '—') + ' · 正确 ' + esc(x.q.ans) + '</span></div>';
+    });
+    if(wrongItems.length > 8) html += '<div class="more">… 共 ' + wrongItems.length + ' 题，已写入错题本</div>';
+    wl.innerHTML = html;
+  }else{
+    wl.innerHTML = '<div class="allright">全部答对。</div>';
+  }
+  $('btnRsRetry').hidden = !wrongItems.length;
+  $('resultBlock').hidden = false;
+  showView('exam');
+}
+function retryWrong(){
+  if(!lastResultIds.length) return;
+  const ids = lastResultIds.slice();
+  exam = {ids:ids, answers:{}, start:Date.now(), limit:(lastExamMinutes || 0)*60, timer:null};
+  queue = ids.slice();
+  qi = 0;
+  pendingMulti = {};
+  $('resultBlock').hidden = true;
+  showView('quiz');
+  startClock();
+  render();
+  toast('错题重考 · ' + ids.length + ' 题');
+}
+
+/* ---------------- AI ---------------- */
+async function fetchConfig(){
+  const r = await fetch('/api/config', {cache:'no-store'});
+  return await r.json();
+}
+async function loadConfig(){
+  try{
+    cfg = await fetchConfig();
+    fillAiForm();
+  }catch(e){
+    console.warn('读取 AI 配置失败', e);
+  }
+}
+function buildPresetOptions(){
+  const sel = $('aiPreset');
+  const presets = cfg.presets || {};
+  const keys = Object.keys(presets);
+  if(!keys.length) return;
+  sel.innerHTML = keys.map(k =>
+    '<option value="' + esc(k) + '">' + esc(presets[k].label || k) + '</option>'
+  ).join('');
+}
+function fillAiForm(){
+  buildPresetOptions();
+  const sel = $('aiPreset');
+  if(cfg.preset) sel.value = cfg.preset;
+  $('aiBase').value = cfg.base_url || '';
+  $('aiModel').value = cfg.model || '';
+  $('aiKey').value = '';
+  $('aiKey').placeholder = cfg.has_key
+    ? ('已保存 ' + (cfg.key_masked || '****') + '（留空保持不变）')
+    : '填写 Key（本地模型可留空）';
+  const scopeEl = $('aiScope');
+  if(scopeEl){
+    const scope = cfg.scope || 'global';
+    scopeEl.textContent = scope === 'user'
+      ? '当前配置保存在你的账号里。'
+      : scope === 'fallback'
+        ? '还没保存过个人配置，当前显示的是本机全局配置；保存后写入你的账号。'
+        : '未登录：配置保存在本机全局（config.json）。登录后可按账号分别保存。';
+  }
+}
+function onPresetChange(){
+  const v = $('aiPreset').value;
+  const p = (cfg.presets || {})[v];
+  if(p && v !== 'custom'){
+    $('aiBase').value = p.base_url || '';
+    $('aiModel').value = p.model || '';
+  }
+}
+async function saveAi(doTest){
+  const body = {
+    preset: $('aiPreset').value,
+    base_url: $('aiBase').value.trim(),
+    model: $('aiModel').value.trim()
+  };
+  const key = $('aiKey').value.trim();
+  if(key) body.api_key = key;
+  $('aiStatus').textContent = '保存中…';
+  try{
+    const r = await fetch('/api/config', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const j = await r.json();
+    if(!r.ok || j.error) throw new Error(j.error || '保存失败');
+    cfg = await fetchConfig();
+    fillAiForm();
+    if(!doTest){
+      $('aiStatus').textContent = '配置已保存';
+      toast('AI 配置已保存');
+      return;
+    }
+    $('aiStatus').textContent = '测试连接中…本地模型首次加载可能需要 1–3 分钟';
+    const tr = await fetch('/api/explain/test', {method:'POST'});
+    const tj = await tr.json();
+    $('aiStatus').textContent = tj.ok ? ('连接成功：' + (tj.msg || '可用')) : ('连接失败：' + (tj.msg || '未知错误'));
+    toast(tj.ok ? 'AI 连接成功' : 'AI 连接失败');
+  }catch(e){
+    $('aiStatus').textContent = '错误：' + e.message;
+    toast('AI 配置失败：' + e.message);
+  }
+}
+async function genExplain(force){
+  if(!cur || exam) return;
+  const btn = $('btnAiGen');
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '生成中…';
+  try{
+    const r = await fetch('/api/explain', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({bank:cur.bank, qid:cur.q.id, force:!!force})
+    });
+    const j = await r.json();
+    if(!r.ok || j.error) throw new Error(j.error || '生成失败');
+    cur.q.exp = j.exp;
+    toast(j.cached ? '已有解析' : '解析已生成并保存');
+    render();
+  }catch(e){
+    btn.disabled = false;
+    btn.textContent = old;
+    toast('生成失败：' + e.message);
+  }
+}
+async function startBatch(){
+  if(exam){ toast('考试进行中，请先交卷'); return; }
+  if(batchRunning) return;
+  const limit = Math.max(1, Math.min(1000, Number($('batchLimit').value) || 20));
+  const list = ALL.filter(x => !(x.q.exp || '').trim()).slice(0, limit);
+  if(!list.length){
+    $('batchStatus').textContent = '当前选中题库里没有缺解析的题';
+    return;
+  }
+  batchRunning = true;
+  batchStop = false;
+  $('btnBatch').disabled = true;
+  $('btnBatchStop').disabled = false;
+  let done = 0, failed = false;
+  $('batchBar').style.width = '0%';
+  for(let i=0;i<list.length;i++){
+    if(batchStop) break;
+    const item = list[i];
+    $('batchStatus').textContent = '生成中 ' + (i+1) + '/' + list.length + '：' + String(item.q.stem || '').slice(0, 26);
+    try{
+      const r = await fetch('/api/explain', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({bank:item.bank, qid:item.q.id})
+      });
+      const j = await r.json();
+      if(!r.ok || j.error) throw new Error(j.error || '生成失败');
+      item.q.exp = j.exp;
+      done++;
+      if(cur && cur.key === item.key) render();
+    }catch(e){
+      failed = true;
+      $('batchStatus').textContent = '已中断：' + e.message;
+      toast('批量生成中断：' + e.message);
+      break;
+    }
+    $('batchBar').style.width = Math.round((i+1)/list.length*100) + '%';
+    await sleep(500);
+  }
+  batchRunning = false;
+  $('btnBatch').disabled = false;
+  $('btnBatchStop').disabled = true;
+  if(!failed){
+    $('batchStatus').textContent = batchStop
+      ? ('已停止 · 本次生成 ' + done + ' 题')
+      : ('完成 · 本次生成 ' + done + ' 题');
+  }
+  updateStats();
+}
+
+/* ---------------- 题库管理 ---------------- */
+function groupOptions(current){
+  const gs = Array.from(new Set(BANKS.map(b => b.group).filter(Boolean))).sort((a,b) => a.localeCompare(b,'zh'));
+  let html = '<option value=""' + (current === '' ? ' selected' : '') + '>未分组</option>';
+  gs.forEach(g => {
+    html += '<option value="' + esc(g) + '"' + (g === current ? ' selected' : '') + '>' + esc(g) + '</option>';
+  });
+  html += '<option value="__new__">＋ 新建分组…</option>';
+  return html;
+}
+function renderBankList(){
+  const wrap = $('bankList');
+  wrap.innerHTML = '';
+  $('groupList').innerHTML = Array.from(new Set(BANKS.map(b => b.group).filter(Boolean)))
+    .map(g => '<option value="' + esc(g) + '">').join('');
+  if(!BANKS.length){
+    wrap.innerHTML = '<p class="status">题库目录还是空的，可以先用上面的导入区。</p>';
+    return;
+  }
+  const groups = new Map();
+  BANKS.forEach(b => {
+    const g = b.group || '未分组';
+    if(!groups.has(g)) groups.set(g, []);
+    groups.get(g).push(b);
+  });
+  groups.forEach((banks, g) => {
+    const h = document.createElement('div');
+    h.className = 'mg-group';
+    h.textContent = g + ' · ' + banks.length + ' 个题库';
+    wrap.appendChild(h);
+    banks.forEach(b => {
+      const row = document.createElement('div');
+      row.className = 'mrow';
+      row.innerHTML =
+        '<div class="mname"><b>' + esc(b.name) + '</b>' +
+        '<span>' + b.total + ' 题 · 解析 ' + b.exp + (b.updated ? ' · ' + esc(b.updated) : '') + '</span></div>' +
+        '<div class="mact"><select class="mgroup" title="移动到分组">' + groupOptions(b.group || '') + '</select>' +
+        '<button type="button" class="link mrename">重命名</button>' +
+        '<button type="button" class="link danger mdelete">删除</button></div>';
+      const sel = row.querySelector('select');
+      sel.onchange = () => moveBank(b.id, sel.value);
+      row.querySelector('.mrename').onclick = () => renameBank(b.id, b.name);
+      row.querySelector('.mdelete').onclick = () => deleteBank(b.id, b.name);
+      wrap.appendChild(row);
+    });
+  });
+}
+async function moveBank(id, group){
+  if(group === '__new__'){
+    const name = window.prompt('新分组名称');
+    if(!name || !name.trim()){ renderBankList(); return; }
+    group = name.trim();
+  }
+  if(!guardExam()){ renderBankList(); return; }
+  try{
+    const r = await fetch(bankUrl(id) + '/group', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({group:group})
+    });
+    const j = await r.json();
+    if(!r.ok || j.error) throw new Error(j.error || '移动失败');
+    const nid = j.id;
+    selected = selected.map(x => x === id ? nid : x);
+    delete BANK_DATA[id];
+    await refreshBanks({add:[nid], remove:[id], dropCache:[nid]});
+    renderBankList();
+    toast('已移动到「' + (j.group || '未分组') + '」');
+  }catch(e){
+    toast('移动失败：' + e.message);
+    renderBankList();
+  }
+}
+function migrateBankKeys(oldId, newId){
+  let changed = false;
+  [records, fav].forEach(map => {
+    Object.keys(map).forEach(k => {
+      if(k.indexOf(oldId + '|') !== 0) return;
+      const nk = newId + k.slice(oldId.length);
+      if(!(nk in map)) map[nk] = map[k];
+      delete map[k];
+      changed = true;
+    });
+  });
+  if(changed){
+    writeLS(LS.done, records);
+    writeLS(LS.fav, fav);
+    schedulePush();
+  }
+}
+async function renameBank(id, name){
+  if(!guardExam()) return;
+  const raw = window.prompt('新的题库名（分组不变）：', name);
+  if(raw == null) return;
+  const next = raw.trim();
+  if(!next || next === name) return;
+  try{
+    const r = await fetch(bankUrl(id) + '/rename', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({name:next})
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok || j.error) throw new Error(j.error || '重命名失败');
+    const nid = j.id;
+    const wasSelected = selected.includes(id);
+    if(nid !== id){
+      selected = selected.map(x => x === id ? nid : x);
+      migrateBankKeys(id, nid);
+      delete BANK_DATA[id];
+    }
+    delete BANK_DATA[nid];
+    await refreshBanks({add: wasSelected ? [nid] : [], remove:[id], dropCache:[nid]});
+    renderBankList();
+    toast('已重命名为「' + j.name + '」');
+  }catch(e){
+    toast('重命名失败：' + e.message);
+  }
+}
+async function deleteBank(id, name){
+  if(!guardExam()) return;
+  if(!window.confirm('确定删除题库「' + name + '」？文件会从磁盘删除，不可恢复。')) return;
+  try{
+    const r = await fetch(bankUrl(id), {method:'DELETE'});
+    const j = await r.json();
+    if(!r.ok || j.error) throw new Error(j.error || '删除失败');
+    delete BANK_DATA[id];
+    await refreshBanks({remove:[id]});
+    renderBankList();
+    toast('已删除');
+  }catch(e){
+    toast('删除失败：' + e.message);
+  }
+}
+function onFilePick(){
+  const f = $('imFile').files[0];
+  if(!f) return;
+  if(!$('imName').value) $('imName').value = f.name.replace(/\.[^.]+$/, '');
+  const ext = (f.name.split('.').pop() || '').toLowerCase();
+  const map = {json:'json', txt:'text', csv:'csv', docx:'docx'};
+  if(map[ext]) $('imFormat').value = map[ext];
+}
+async function doImport(){
+  if(!guardExam()) return;
+  const name = $('imName').value.trim();
+  const group = $('imGroup').value.trim();
+  const format = $('imFormat').value;
+  const text = $('imText').value;
+  const file = $('imFile').files[0];
+  if(!text.trim() && !file){ toast('请粘贴内容或选择文件'); return; }
+  if(format === 'docx' && !file){ toast('Word 格式需要选择 .docx 文件'); return; }
+  const fd = new FormData();
+  fd.append('format', format);
+  fd.append('name', name);
+  fd.append('group', group);
+  fd.append('text', text);
+  if(file) fd.append('file', file);
+  $('btnImport').disabled = true;
+  $('imStatus').textContent = '解析中…';
+  try{
+    const r = await fetch('/api/banks', {method:'POST', body:fd});
+    const j = await r.json();
+    if(!r.ok || j.error) throw new Error(j.error || '导入失败');
+    let msg = '入库 ' + j.kept + ' 题' + (j.dropped ? '，剔除 ' + j.dropped + ' 题' : '');
+    const rs = Object.keys(j.reasons || {}).map(k => k + ' ' + j.reasons[k]).join('；');
+    if(rs) msg += '（' + rs + '）';
+    $('imStatus').textContent = msg;
+    $('imText').value = '';
+    $('imFile').value = '';
+    $('imName').value = '';
+    delete BANK_DATA[j.id];
+    await refreshBanks({add:[j.id], dropCache:[j.id]});
+    renderBankList();
+    toast('导入成功：' + msg);
+  }catch(e){
+    $('imStatus').textContent = '错误：' + e.message;
+    toast('导入失败：' + e.message);
+  }finally{
+    $('btnImport').disabled = false;
+  }
+}
+
+/* ---------------- 事件 ---------------- */
+function bindEvents(){
+  document.querySelectorAll('[data-view]').forEach(b => {
+    b.onclick = () => showView(b.dataset.view);
+  });
+  $('btnPrev').onclick = () => go(-1);
+  $('btnNext').onclick = () => go(1);
+  $('btnSubmit').onclick = submitMulti;
+  $('btnExamSubmit').onclick = askSubmit;
+  $('btnFav').onclick = toggleFav;
+  $('btnAiGen').onclick = () => genExplain($('btnAiGen').dataset.force === '1');
+  $('btnAiSave').onclick = () => saveAi(false);
+  $('btnAiTest').onclick = () => saveAi(true);
+  $('btnBatch').onclick = startBatch;
+  $('btnBatchStop').onclick = () => {
+    batchStop = true;
+    $('btnBatchStop').disabled = true;
+    $('batchStatus').textContent = '正在停止…';
+  };
+  $('btnImport').onclick = doImport;
+  $('imFile').onchange = onFilePick;
+  $('btnExamStart').onclick = startExam;
+  $('btnRsRetry').onclick = retryWrong;
+  $('btnReset').onclick = resetRecords;
+  $('btnClearFav').onclick = clearFav;
+  $('aiPreset').onchange = onPresetChange;
+  $('authSubmit').onclick = submitAuth;
+  $('authSwitch').onclick = () => openAuth(authMode === 'login' ? 'register' : 'login');
+  $('authClose').onclick = closeAuth;
+  $('authVeil').onclick = e => { if(e.target === $('authVeil')) closeAuth(); };
+  $('authPass').onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); submitAuth(); } };
+  $('authEmail').onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); submitAuth(); } };
+  $('authCode').onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); submitAuth(); } };
+  $('authSendCode').onclick = sendAuthCode;
+  $('authForgot').onclick = () => openAuth('reset');
+  $('authMailLink').onclick = () => {
+    authGate = false;
+    closeAuth();
+    showView('profile');
+    setTimeout(() => $('mailHost').focus(), 200);
+  };
+  $('btnProfileLogin').onclick = () => openAuth('login');
+  $('btnSaveProfile').onclick = saveProfileName;
+  $('btnChangePass').onclick = changePassword;
+  $('btnMailSave').onclick = saveMailConfig;
+  $('btnMailTest').onclick = testMail;
+  $('exMinutes').oninput = () => {
+    const v = Math.max(0, Math.min(600, Math.round(Number($('exMinutes').value) || 0)));
+    writeLS(LS.min, v);
+    syncExamSheet();
+  };
+  document.querySelectorAll('#exSrcChips .chip').forEach(b => {
+    b.onclick = () => { examPick.src = b.dataset.src; syncExamSheet(); };
+  });
+  document.querySelectorAll('#exNChips .chip').forEach(b => {
+    b.onclick = () => { examPick.n = Number(b.dataset.n); syncExamSheet(); };
+  });
+  document.addEventListener('keydown', onKeydown);
+}
+function onKeydown(e){
+  if(!$('authVeil').hidden){
+    if(e.key === 'Escape') closeAuth();
+    return;
+  }
+  if(e.ctrlKey || e.metaKey || e.altKey) return;
+  const tag = (e.target && e.target.tagName || '').toLowerCase();
+  if(tag === 'input' || tag === 'textarea' || tag === 'select') return;
+  if(currentView !== 'quiz'){
+    if(e.key === 'Escape') showView('quiz');
+    return;
+  }
+  if(!cur) return;
+  if(/^[a-hA-H]$/.test(e.key)){
+    const L = e.key.toUpperCase();
+    const opts = Array.isArray(cur.q.opts) ? cur.q.opts : Object.keys(cur.q.opts || {}).map(k => ({k:k}));
+    if(opts.some(o => (o.k || o) === L)){ choose(L); e.preventDefault(); }
+    return;
+  }
+  if(/^[1-8]$/.test(e.key)){
+    const opts = Array.isArray(cur.q.opts) ? cur.q.opts : Object.keys(cur.q.opts || {}).map(k => ({k:k}));
+    const o = opts[Number(e.key) - 1];
+    if(o){ choose(o.k); e.preventDefault(); }
+    return;
+  }
+  if(e.key === 'ArrowLeft'){ go(-1); e.preventDefault(); }
+  else if(e.key === 'ArrowRight'){ go(1); e.preventDefault(); }
+  else if(e.key === 'Enter'){
+    e.preventDefault();
+    if(exam){
+      if(qi >= queue.length - 1) askSubmit(); else go(1);
+    }else if(cur.q.type === 'multi' && !records[cur.key]){
+      submitMulti();
+    }else{
+      go(1);
+    }
+  }
+}
+
+/* ---------------- 启动 ---------------- */
+document.addEventListener('DOMContentLoaded', () => {
+  initInk();
+  bindEvents();
+  renderTypeChips();
+  renderModeChips();
+  showView('quiz');
+  (async () => {
+    await loadMailState();
+    await loadMe();
+    if(authUser){
+      await loadConfig();
+      await refreshBanks({first:true});
+      await pullProgress();
+    }else{
+      openAuthGate();
+    }
+    const boot = $('boot');
+    if(boot){
+      boot.classList.add('gone');
+      setTimeout(() => { if(boot.parentNode) boot.parentNode.removeChild(boot); }, 750);
+    }
+  })();
+});
+})();
+</script>
+</body>
+</html>

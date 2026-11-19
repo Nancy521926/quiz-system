@@ -1,0 +1,17 @@
+# 本地运行数据（含密钥与账号信息，禁止入库）
+__pycache__/
+*.py[cod]
+config.json
+smtp.json
+quiz.db*
+secret.key
+
+# 题库（第三方资料，不随仓库分发，运行时自动创建）
+题库/
+
+# 系统垃圾
+Thumbs.db
+desktop.ini
+.DS_Store
+*.log
+启动错误.log
