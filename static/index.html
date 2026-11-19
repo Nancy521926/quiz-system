@@ -78,6 +78,7 @@ button{font-family:inherit}
 .nav button.on::after{transform:scaleX(1)}
 .nav button.on .no{color:var(--cinnabar)}
 .nav button.on::before{content:"";position:absolute;left:-13px;top:50%;width:4px;height:4px;margin-top:-2px;background:var(--cinnabar)}
+.nav button[hidden]{display:none}
 .side-foot{margin-top:auto;padding-top:22px;border-top:1px solid var(--faint-2)}
 .side-foot p{margin:0;font-size:10.5px;letter-spacing:.16em;color:var(--ink-4);line-height:2}
 
@@ -461,6 +462,7 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--faint-2);font
       <button type="button" data-view="exam"><span class="no">04</span><span>考试</span></button>
       <button type="button" data-view="stats"><span class="no">05</span><span>统计</span></button>
       <button type="button" data-view="profile"><span class="no">06</span><span>我的</span></button>
+      <button type="button" data-view="mail" id="navMail" hidden><span class="no">07</span><span>邮件服务</span></button>
     </nav>
     <div class="side-user" id="sideUser"></div>
     <div class="side-foot">
@@ -786,7 +788,11 @@ D. 丁
         </div>
       </div>
 
-      <div class="block" id="mailBlock" hidden>
+    </section>
+
+    <!-- 邮件服务（仅管理员） -->
+    <section class="view" id="viewMail" aria-label="邮件服务">
+      <div class="block" id="mailBlock">
         <h2>邮件服务（验证码）<span class="status" style="margin-left:8px">仅管理员</span></h2>
         <p class="intro">注册验证与找回密码的邮件从这里发出。QQ 邮箱：smtp.qq.com / 465 / SSL；163：smtp.163.com / 465 / SSL；Gmail：smtp.gmail.com / 587 / STARTTLS。密码一栏填邮箱的「授权码」，不是登录密码。</p>
         <p class="tip" id="mailStatus" style="margin:-6px 0 14px">读取中…</p>
@@ -860,8 +866,8 @@ D. 丁
       <button type="button" class="link" id="authSwitch">没有账号？去注册</button>
     </div>
     <p class="auth-alt" id="authForgotRow"><button type="button" class="link" id="authForgot">忘记密码？</button></p>
-    <p class="auth-alt" id="authMailRow" hidden><button type="button" class="link" id="authMailLink">去「我的」页配置邮件服务</button></p>
-    <p class="tip">账号只存在本机 quiz.db，密码加盐哈希存储；注册需要邮箱验证码，邮件服务由管理员在「我的」页配置。</p>
+    <p class="auth-alt" id="authMailRow" hidden><button type="button" class="link" id="authMailLink">去「邮件服务」页配置</button></p>
+    <p class="tip">账号只存在本机 quiz.db，密码加盐哈希存储；注册需要邮箱验证码，邮件服务由管理员在侧栏「07 邮件服务」配置。</p>
   </div>
 </div>
 
@@ -886,7 +892,8 @@ const VIEWS = {
   ai:    {el:'viewAi', title:'解析', sub:'接入大模型，生成解题思路'},
   exam:  {el:'viewExam', title:'考试', sub:'自定题量与时长'},
   stats: {el:'viewStats', title:'统计', sub:'做题记录与正确率'},
-  profile: {el:'viewProfile', title:'我的', sub:'账号、统计与安全设置'}
+  profile: {el:'viewProfile', title:'我的', sub:'账号、统计与安全设置'},
+  mail:  {el:'viewMail', title:'邮件服务', sub:'配置 SMTP，注册与找回密码的验证码从这里发出'}
 };
 
 let BANKS = [];
@@ -977,6 +984,18 @@ function renderSideUser(){
     $('btnOpenAuth').onclick = () => openAuth('login');
   }
 }
+function updateMailNav(){
+  const nav = $('navMail');
+  if(!nav) return;
+  const can = mailBootstrap || !!(authUser && authUser.is_admin);
+  nav.hidden = !can;
+  if(!can && currentView === 'mail') showView('quiz');
+}
+function closeMailAccess(){
+  const nav = $('navMail');
+  if(nav) nav.hidden = true;
+  if(currentView === 'mail') showView('quiz');
+}
 function openAuth(mode){
   authMode = (mode === 'register' || mode === 'reset') ? mode : 'login';
   const reg = authMode === 'register';
@@ -997,7 +1016,7 @@ function openAuth(mode){
   $('authPass').setAttribute('autocomplete', (reg || reset) ? 'new-password' : 'current-password');
   $('authMsg').textContent = (reg || reset) && !mailReady
     ? (mailBootstrap
-        ? '邮件服务尚未配置，无法发送验证码。请先在「我的」页填写 SMTP 信息。'
+        ? '邮件服务尚未配置，无法发送验证码。请先打开侧栏「07 邮件服务」填写 SMTP 信息。'
         : '邮件服务尚未配置，无法发送验证码，请联系管理员。')
     : '';
   $('authPass').value = '';
@@ -1100,6 +1119,7 @@ async function submitAuth(){
     authGate = false;
     closeAuth();
     renderSideUser();
+    updateMailNav();
     toast(wasReset ? '密码已重置，已登录' : (wasRegister ? '注册成功，已登录' : '已登录'));
     await loadConfig();
     await refreshBanks({first:true});
@@ -1190,8 +1210,6 @@ async function loadProfile(){
   if(!authUser){
     guest.hidden = false;
     main.hidden = true;
-    $('mailBlock').hidden = !mailBootstrap;
-    if(mailBootstrap) loadMailForm();
     return;
   }
   guest.hidden = true;
@@ -1211,8 +1229,8 @@ async function loadProfile(){
     if(!r.ok || j.error) throw new Error(j.error || '加载失败');
     const u = j.user || {}, st = j.stats || {};
     const isAdmin = !!u.is_admin;
-    $('mailBlock').hidden = !isAdmin;
-    if(isAdmin) await loadMailForm();
+    if(authUser) authUser.is_admin = isAdmin ? 1 : 0;
+    updateMailNav();
     const name = u.name || u.email || '青简用户';
     $('pfAvatar').textContent = Array.from(name)[0] || '青';
     $('pfName').textContent = name;
@@ -1276,13 +1294,13 @@ async function changePassword(){
 }
 async function loadMailForm(){
   const block = $('mailBlock');
-  if(!block || block.hidden) return;
+  if(!block) return;
   try{
     const r = await fetch('/api/mail/config', {cache:'no-store'});
     const j = await r.json().catch(() => ({}));
     if(!r.ok){
       if(r.status === 401 || r.status === 403){
-        block.hidden = true;
+        closeMailAccess();
         return;
       }
       throw new Error(j.error || ('HTTP ' + r.status));
@@ -1320,7 +1338,7 @@ async function saveMailConfig(){
     });
     const j = await r.json().catch(() => ({}));
     if(r.status === 401 || r.status === 403){
-      $('mailBlock').hidden = true;
+      closeMailAccess();
       throw new Error(j.error || '仅管理员可修改邮件服务配置');
     }
     if(!r.ok || j.error) throw new Error(j.error || '保存失败');
@@ -1342,7 +1360,7 @@ async function testMail(){
     });
     const j = await r.json().catch(() => ({}));
     if(r.status === 401 || r.status === 403){
-      $('mailBlock').hidden = true;
+      closeMailAccess();
       throw new Error(j.error || '仅管理员可操作邮件服务');
     }
     if(!r.ok || j.error) throw new Error(j.error || '发送失败');
@@ -1603,6 +1621,7 @@ function showView(name){
   if(name === 'stats') renderStatsSheet();
   if(name === 'exam') syncExamSheet();
   if(name === 'profile') loadProfile();
+  if(name === 'mail') loadMailForm();
   window.scrollTo({top:0, behavior:reducedMotion ? 'auto' : 'smooth'});
   if(!exam) document.title = '青简 · ' + v.title;
 }
@@ -2651,7 +2670,7 @@ function bindEvents(){
   $('authMailLink').onclick = () => {
     authGate = false;
     closeAuth();
-    showView('profile');
+    showView('mail');
     setTimeout(() => $('mailHost').focus(), 200);
   };
   $('btnProfileLogin').onclick = () => openAuth('login');
@@ -2721,6 +2740,7 @@ document.addEventListener('DOMContentLoaded', () => {
   (async () => {
     await loadMailState();
     await loadMe();
+    updateMailNav();
     if(authUser){
       await loadConfig();
       await refreshBanks({first:true});
