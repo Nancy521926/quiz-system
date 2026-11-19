@@ -770,7 +770,7 @@ D. 丁
 
         <div class="block">
           <h2>修改密码</h2>
-          <p class="intro">需要验证原密码。忘记原密码时，先在下方配置好邮件服务，再到登录框点「忘记密码」，用邮箱验证码重置。</p>
+          <p class="intro">需要验证原密码。忘记原密码时，到登录框点「忘记密码」，用邮箱验证码重置（邮件服务需由管理员配置）。</p>
           <div class="grid2">
             <label class="field">原密码
               <input id="pfOldPass" type="password" autocomplete="current-password">
@@ -786,8 +786,8 @@ D. 丁
         </div>
       </div>
 
-      <div class="block">
-        <h2>邮件服务（验证码）</h2>
+      <div class="block" id="mailBlock" hidden>
+        <h2>邮件服务（验证码）<span class="status" style="margin-left:8px">仅管理员</span></h2>
         <p class="intro">注册验证与找回密码的邮件从这里发出。QQ 邮箱：smtp.qq.com / 465 / SSL；163：smtp.163.com / 465 / SSL；Gmail：smtp.gmail.com / 587 / STARTTLS。密码一栏填邮箱的「授权码」，不是登录密码。</p>
         <p class="tip" id="mailStatus" style="margin:-6px 0 14px">读取中…</p>
         <div class="grid2">
@@ -861,7 +861,7 @@ D. 丁
     </div>
     <p class="auth-alt" id="authForgotRow"><button type="button" class="link" id="authForgot">忘记密码？</button></p>
     <p class="auth-alt" id="authMailRow" hidden><button type="button" class="link" id="authMailLink">去「我的」页配置邮件服务</button></p>
-    <p class="tip">账号只存在本机 quiz.db，密码加盐哈希存储；注册需要邮箱验证码，请先在「我的」页配置邮件服务。</p>
+    <p class="tip">账号只存在本机 quiz.db，密码加盐哈希存储；注册需要邮箱验证码，邮件服务由管理员在「我的」页配置。</p>
   </div>
 </div>
 
@@ -886,7 +886,7 @@ const VIEWS = {
   ai:    {el:'viewAi', title:'解析', sub:'接入大模型，生成解题思路'},
   exam:  {el:'viewExam', title:'考试', sub:'自定题量与时长'},
   stats: {el:'viewStats', title:'统计', sub:'做题记录与正确率'},
-  profile: {el:'viewProfile', title:'我的', sub:'账号、统计与邮件设置'}
+  profile: {el:'viewProfile', title:'我的', sub:'账号、统计与安全设置'}
 };
 
 let BANKS = [];
@@ -913,6 +913,7 @@ let authUser = null;
 let authGate = false;
 let authMode = 'login';
 let mailReady = false;
+let mailBootstrap = false;   // 首次部署、库里还没有账号：允许未登录先配 SMTP
 let codeTimer = 0;
 let codeTick = null;
 let pushTimer = null;
@@ -991,10 +992,14 @@ function openAuth(mode){
   $('authSubmit').textContent = reset ? '重置并登录' : (reg ? '注册' : '登录');
   $('authSwitch').textContent = reset ? '返回登录' : (reg ? '已有账号？去登录' : '没有账号？去注册');
   $('authForgotRow').hidden = authMode !== 'login';
-  $('authMailRow').hidden = !((reg || reset) && !mailReady);
+  const canConfigMail = mailBootstrap || !!(authUser && authUser.is_admin);
+  $('authMailRow').hidden = !((reg || reset) && !mailReady && canConfigMail);
   $('authPass').setAttribute('autocomplete', (reg || reset) ? 'new-password' : 'current-password');
   $('authMsg').textContent = (reg || reset) && !mailReady
-    ? '邮件服务尚未配置，无法发送验证码。请先到「我的」页填写 SMTP。' : '';
+    ? (mailBootstrap
+        ? '邮件服务尚未配置，无法发送验证码。请先在「我的」页填写 SMTP 信息。'
+        : '邮件服务尚未配置，无法发送验证码，请联系管理员。')
+    : '';
   $('authPass').value = '';
   $('authCode').value = '';
   resetCodeButton();
@@ -1117,11 +1122,16 @@ async function logout(){
 }
 async function loadMailState(){
   try{
-    const r = await fetch('/api/mail/config', {cache:'no-store'});
+    let r = await fetch('/api/mail/status', {cache:'no-store'});
+    if(r.status === 404){  // 兼容未重启的旧服务端
+      r = await fetch('/api/mail/config', {cache:'no-store'});
+    }
     const j = await r.json();
     mailReady = !!j.configured;
+    mailBootstrap = !!j.bootstrap;
   }catch(e){
     mailReady = false;
+    mailBootstrap = false;
   }
 }
 async function loadMe(){
@@ -1180,6 +1190,8 @@ async function loadProfile(){
   if(!authUser){
     guest.hidden = false;
     main.hidden = true;
+    $('mailBlock').hidden = !mailBootstrap;
+    if(mailBootstrap) loadMailForm();
     return;
   }
   guest.hidden = true;
@@ -1198,11 +1210,15 @@ async function loadProfile(){
     const j = await r.json().catch(() => ({}));
     if(!r.ok || j.error) throw new Error(j.error || '加载失败');
     const u = j.user || {}, st = j.stats || {};
+    const isAdmin = !!u.is_admin;
+    $('mailBlock').hidden = !isAdmin;
+    if(isAdmin) await loadMailForm();
     const name = u.name || u.email || '青简用户';
     $('pfAvatar').textContent = Array.from(name)[0] || '青';
     $('pfName').textContent = name;
     $('pfEmail').textContent = u.email || '';
-    $('pfMeta').textContent = '加入于 ' + (u.created_at || '—') + ' · 最近登录 ' + (u.last_login || u.created_at || '—');
+    $('pfMeta').textContent = '加入于 ' + (u.created_at || '—') + ' · 最近登录 ' +
+      (u.last_login || u.created_at || '—') + (isAdmin ? ' · 管理员' : '');
     $('pfDone').textContent = st.done || 0;
     $('pfAcc').textContent = st.accuracy || 0;
     $('pfFav').textContent = st.fav || 0;
@@ -1213,7 +1229,7 @@ async function loadProfile(){
     mailReady = !!j.mail_configured;
     $('pfStatus').textContent =
       (j.llm_configured ? 'AI 接口：个人配置已保存' : 'AI 接口：使用全局配置') +
-      ' · 邮件服务：' + (mailReady ? '已配置' : '未配置');
+      (isAdmin ? ' · 邮件服务：' + (mailReady ? '已配置' : '未配置') : '');
   }catch(e){
     $('pfStatus').textContent = '加载失败：' + e.message;
   }
@@ -1259,9 +1275,18 @@ async function changePassword(){
   }
 }
 async function loadMailForm(){
+  const block = $('mailBlock');
+  if(!block || block.hidden) return;
   try{
     const r = await fetch('/api/mail/config', {cache:'no-store'});
-    const j = await r.json();
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok){
+      if(r.status === 401 || r.status === 403){
+        block.hidden = true;
+        return;
+      }
+      throw new Error(j.error || ('HTTP ' + r.status));
+    }
     mailReady = !!j.configured;
     $('mailHost').value = j.host || '';
     $('mailPort').value = j.port || 465;
@@ -1294,6 +1319,10 @@ async function saveMailConfig(){
       body:JSON.stringify(body)
     });
     const j = await r.json().catch(() => ({}));
+    if(r.status === 401 || r.status === 403){
+      $('mailBlock').hidden = true;
+      throw new Error(j.error || '仅管理员可修改邮件服务配置');
+    }
     if(!r.ok || j.error) throw new Error(j.error || '保存失败');
     mailReady = !!j.configured;
     box.textContent = j.configured
@@ -1312,6 +1341,10 @@ async function testMail(){
       method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'
     });
     const j = await r.json().catch(() => ({}));
+    if(r.status === 401 || r.status === 403){
+      $('mailBlock').hidden = true;
+      throw new Error(j.error || '仅管理员可操作邮件服务');
+    }
     if(!r.ok || j.error) throw new Error(j.error || '发送失败');
     box.textContent = '测试邮件已发到 ' + j.to + '，请查收（含垃圾箱）';
   }catch(e){
@@ -1569,10 +1602,7 @@ function showView(name){
   if(name === 'ai') fillAiForm();
   if(name === 'stats') renderStatsSheet();
   if(name === 'exam') syncExamSheet();
-  if(name === 'profile'){
-    loadProfile();
-    loadMailForm();
-  }
+  if(name === 'profile') loadProfile();
   window.scrollTo({top:0, behavior:reducedMotion ? 'auto' : 'smooth'});
   if(!exam) document.title = '青简 · ' + v.title;
 }

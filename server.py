@@ -698,6 +698,20 @@ def init_db():
             );
             """
         )
+        # 账号权限：首个账号成为管理员；老库升级时由最早注册的账号接管。
+        # 只有管理员能在「我的」页查看 / 修改邮件服务配置。
+        cols = {row[1] for row in conn.execute("PRAGMA table_info(users)")}
+        if "is_admin" not in cols:
+            conn.execute(
+                "ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0"
+            )
+        has_admin = conn.execute(
+            "SELECT 1 FROM users WHERE is_admin = 1 LIMIT 1"
+        ).fetchone()
+        if not has_admin:
+            first = conn.execute("SELECT id FROM users ORDER BY id LIMIT 1").fetchone()
+            if first:
+                conn.execute("UPDATE users SET is_admin = 1 WHERE id = ?", (first[0],))
         conn.commit()
     finally:
         conn.close()
@@ -712,13 +726,34 @@ def current_user():
     if not uid:
         return None
     row = get_db().execute(
-        "SELECT id, email, name, created_at, last_login FROM users WHERE id = ?",
+        "SELECT id, email, name, created_at, last_login, is_admin"
+        " FROM users WHERE id = ?",
         (uid,),
     ).fetchone()
     if not row:
         session.pop("uid", None)
         return None
     return dict(row)
+
+
+def user_count():
+    return get_db().execute("SELECT COUNT(*) FROM users").fetchone()[0]
+
+
+def mail_admin_gate():
+    """邮件服务配置的管理员闸：None 放行，否则返回可直接 return 的响应。
+
+    首次部署（库里还没有任何账号）放行未登录访问：否则没法先配 SMTP，
+    也就注册不出第一个管理员账号。
+    """
+    if user_count() == 0:
+        return None
+    user = current_user()
+    if user and user.get("is_admin"):
+        return None
+    if user:
+        return jsonify({"error": "仅管理员可查看或修改邮件服务配置"}), 403
+    return jsonify({"error": "请先登录", "need_login": True}), 401
 
 
 def user_llm_row(uid):
@@ -885,8 +920,9 @@ def consume_code(email, purpose, code):
 init_db()
 
 
-# 未登录只能用这几类接口：看首页、登录/注册/找回密码、配置邮件服务。
-# 其余（题库、AI、配置、进度、个人资料）一律 401，前端据此打开强制登录页。
+# 未登录只能用这几类接口：看首页、登录/注册/找回密码，以及邮件服务相关。
+# 其余（题库、AI、配置、进度、个人资料）一律 401。
+# 邮件配置的路由自己把关：仅管理员，首次部署（无账号）例外，见 mail_admin_gate()。
 PUBLIC_ENDPOINTS = {
     "index",
     "api_register",
@@ -895,6 +931,7 @@ PUBLIC_ENDPOINTS = {
     "api_send_code",
     "api_reset_password",
     "api_me",
+    "api_mail_status",
     "api_mail_config",
     "api_save_mail_config",
     "api_mail_test",
@@ -1051,19 +1088,25 @@ def api_register():
     db = get_db()
     if db.execute("SELECT 1 FROM users WHERE email = ?", (email,)).fetchone():
         return jsonify({"error": "该邮箱已注册，请直接登录"}), 409
+    first_user = db.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0
     if not mail_ready():
         return jsonify({
-            "error": "注册需要邮箱验证码，请先到「我的」页填写 SMTP 信息",
+            "error": (
+                "注册需要邮箱验证码，请先到「我的」页填写 SMTP 信息"
+                if first_user
+                else "注册需要邮箱验证码，邮件服务尚未配置，请联系管理员"
+            ),
             "need_mail_config": True,
         }), 400
     ok, msg = consume_code(email, "register", data.get("code"))
     if not ok:
         return jsonify({"error": msg}), 400
     cur = db.execute(
-        "INSERT INTO users (email, pass_hash, name, created_at, last_login)"
-        " VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO users (email, pass_hash, name, created_at, last_login, is_admin)"
+        " VALUES (?, ?, ?, ?, ?, ?)",
         (email, generate_password_hash(password),
-         name or email.split("@")[0], now_str(), now_str()),
+         name or email.split("@")[0], now_str(), now_str(),
+         1 if first_user else 0),
     )
     db.commit()
     session.permanent = True
@@ -1113,7 +1156,11 @@ def api_send_code():
         return jsonify({"error": "该邮箱未注册"}), 404
     if not mail_ready():
         return jsonify({
-            "error": "尚未配置邮件服务，请先到「我的」页填写 SMTP 信息",
+            "error": (
+                "尚未配置邮件服务，请先到「我的」页填写 SMTP 信息"
+                if db.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0
+                else "尚未配置邮件服务，请联系管理员配置后重试"
+            ),
             "need_mail_config": True,
         }), 400
     now = int(time.time())
@@ -1342,8 +1389,17 @@ def api_update_profile():
 
 # ------------------------------- 邮件服务 -------------------------------
 
+@app.get("/api/mail/status")
+def api_mail_status():
+    """登录 / 注册页只判断「能不能发码」；配置内容仅管理员可见。"""
+    return jsonify({"configured": mail_ready(), "bootstrap": user_count() == 0})
+
+
 @app.get("/api/mail/config")
 def api_mail_config():
+    denied = mail_admin_gate()
+    if denied:
+        return denied
     cfg = load_mail_config()
     try:
         port = int(cfg.get("port") or 465)
@@ -1362,6 +1418,9 @@ def api_mail_config():
 
 @app.post("/api/mail/config")
 def api_save_mail_config():
+    denied = mail_admin_gate()
+    if denied:
+        return denied
     data = request.get_json(silent=True) or {}
     cfg = load_mail_config()
     host = str(data.get("host") or "").strip()
@@ -1396,6 +1455,9 @@ def api_save_mail_config():
 
 @app.post("/api/mail/test")
 def api_mail_test():
+    denied = mail_admin_gate()
+    if denied:
+        return denied
     data = request.get_json(silent=True) or {}
     cfg = load_mail_config()
     to_addr = (
